@@ -1,5 +1,5 @@
 // להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
-const CACHE = 'agam-v10';
+const CACHE = 'agam-v11';
 const ASSETS = [
   './',
   'index.html',
@@ -32,7 +32,12 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  // cache: 'reload' – לא להשתמש בעותק ישן מהמטמון של הדפדפן (GitHub Pages שולח max-age=600)
+  e.waitUntil(
+    caches.open(CACHE)
+      .then((c) => c.addAll(ASSETS.map((url) => new Request(url, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (e) => {
@@ -49,7 +54,8 @@ self.addEventListener('fetch', (e) => {
   if (request.method !== 'GET' || new URL(request.url).origin !== location.origin) return;
 
   const fromCache = () => caches.match(request, { ignoreSearch: true });
-  const fromNetwork = fetch(request).then((res) => {
+  // no-cache = לבדוק מול השרת בכל פעם (304 זול), במקום להסתפק בעותק בן עד 10 דקות
+  const fromNetwork = fetch(request, { cache: 'no-cache' }).then((res) => {
     if (res.ok) {
       const copy = res.clone();
       caches.open(CACHE).then((c) => c.put(request, copy));
