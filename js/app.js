@@ -1,4 +1,3 @@
-import { IDEAS } from './data.js';
 import { renderCountdown } from './countdown.js';
 import { initQuiz } from './quiz.js';
 import { sendWhatsApp } from './whatsapp.js';
@@ -28,23 +27,6 @@ function openWhatsApp(item) {
   item.sent = true;
   store('suggestions', items);
   renderItems();
-}
-
-function renderIdeas() {
-  const box = $('ideas');
-  for (const idea of IDEAS) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'chip';
-    b.textContent = idea;
-    b.addEventListener('click', () => {
-      // מורידים את האימוג'י מההתחלה כדי שההצעה תהיה טקסט נקי
-      $('idea-text').value = idea.replace(/^\S+\s/, '');
-      play('tap');
-      $('idea-text').focus();
-    });
-    box.append(b);
-  }
 }
 
 function renderItems() {
@@ -120,7 +102,6 @@ function setupInstallHint() {
 function init() {
   renderCountdown($('count-big'), $('count-small'));
   initQuiz($('quiz'));
-  renderIdeas();
   renderItems();
   setupInstallHint();
   $('idea-name').value = load('my-name', '');
