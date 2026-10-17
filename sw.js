@@ -1,5 +1,5 @@
 // להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
-const CACHE = 'agam-v8';
+const CACHE = 'agam-v9';
 const ASSETS = [
   './',
   'index.html',
@@ -15,6 +15,16 @@ const ASSETS = [
   'js/certificate.js',
   'js/whatsapp.js',
   'js/icons.js',
+  'game.html',
+  'css/game.css',
+  'js/game/main.js',
+  'js/game/config.js',
+  'js/game/items.js',
+  'js/game/state.js',
+  'js/game/catch.js',
+  'js/game/rewards.js',
+  'js/game/achievements.js',
+  'js/game/avatar.js',
   'fonts/Rubik-subset.woff2',
   'icons/icon-192.png',
   'icons/icon-512.png',

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0d9488">
+  <title>אוספים רעיונות עם אגם</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="אוספים רעיונות">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body class="game">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <!-- מסך ראשי -->
+  <section id="screen-home" class="screen">
+    <header class="g-hero">
+      <button id="open-settings" class="g-icon-btn" type="button" aria-label="הגדרות"></button>
+      <div id="home-avatar" class="avatar-big"></div>
+      <h1 id="home-title"></h1>
+      <p id="home-slogan" class="g-slogan"></p>
+    </header>
+    <main class="g-main">
+      <button id="go-play" class="g-btn g-btn-play" type="button"><span class="g-btn-emoji">🎮</span> שחקו עכשיו</button>
+      <div class="g-row">
+        <button id="go-class" class="g-btn g-btn-blue" type="button"><span class="g-btn-emoji">🏫</span> הכיתה שלי</button>
+        <button id="go-collection" class="g-btn g-btn-purple" type="button"><span class="g-btn-emoji">🧺</span> האוסף שלי<small id="home-progress"></small></button>
+      </div>
+      <p id="home-tagline" class="g-tagline"></p>
+      <p id="home-value" class="g-value"></p>
+      <a id="to-campaign" class="g-link" href="index.html">לדף הקמפיין של אגם</a>
+    </main>
+  </section>
+
+  <!-- משחק -->
+  <section id="screen-play" class="screen play" hidden>
+    <div class="hud">
+      <button id="exit-play" class="g-icon-btn dark" type="button" aria-label="יציאה">✕</button>
+      <div class="stat"><span>ניקוד</span><b id="hud-score">0</b></div>
+      <div class="stat"><span>זמן</span><b id="hud-time">50</b></div>
+      <div class="stat"><span>רעיונות</span><b id="hud-ideas">0</b></div>
+    </div>
+    <div class="field-wrap">
+      <canvas id="game-canvas"></canvas>
+      <div id="banner" class="banner" aria-live="polite"></div>
+      <div id="countdown" class="countdown-overlay"></div>
+      <div id="play-hint" class="play-hint">גררו את האצבע ימינה ושמאלה כדי לתפוס (במחשב: חצים)</div>
+    </div>
+  </section>
+
+  <!-- סיכום משחק -->
+  <section id="screen-result" class="screen" hidden>
+    <main class="g-main result">
+      <h2 id="res-title"></h2>
+      <p id="res-sub" class="g-sub"></p>
+      <div id="res-reward" class="reward"></div>
+      <div id="res-badges" class="badges-new"></div>
+      <p id="res-value" class="g-value"></p>
+      <p class="g-closing"><span id="res-closing"></span><br><b id="res-slogan"></b></p>
+      <div class="g-stack">
+        <button id="res-again" class="g-btn g-btn-play" type="button">🎮 עוד משחק</button>
+        <div class="g-row">
+          <button id="res-class" class="g-btn g-btn-blue" type="button">🏫 לכיתה שלי</button>
+          <button id="res-collection" class="g-btn g-btn-purple" type="button">🧺 האוסף שלי</button>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- הכיתה שלי -->
+  <section id="screen-class" class="screen" hidden>
+    <header class="g-top">
+      <button class="g-back" data-go="home" type="button">‹ בית</button>
+      <h2>הכיתה שלי</h2>
+    </header>
+    <main class="g-main">
+      <p id="class-hint" class="g-sub"></p>
+      <div id="room" class="room"></div>
+      <h3 class="g-h3">הפריטים שלי</h3>
+      <div id="tray" class="tray"></div>
+      <p id="tray-empty" class="g-sub" hidden>עוד אין פריטים. שחקו משחק כדי לקבל את הראשון!</p>
+    </main>
+  </section>
+
+  <!-- האוסף שלי -->
+  <section id="screen-collection" class="screen" hidden>
+    <header class="g-top">
+      <button class="g-back" data-go="home" type="button">‹ בית</button>
+      <h2>האוסף שלי</h2>
+    </header>
+    <main class="g-main">
+      <div class="progress-box">
+        <div id="col-count" class="col-count"></div>
+        <div class="bar"><i id="col-bar"></i></div>
+      </div>
+      <div id="stars-box" class="stars-box"></div>
+      <div id="col-grid" class="col-grid"></div>
+      <h3 class="g-h3">הישגים</h3>
+      <div id="ach-grid" class="ach-grid"></div>
+      <div class="g-stats" id="stats"></div>
+    </main>
+  </section>
+
+  <!-- חדש באוסף (פתיחה בעזרת כוכבים) -->
+  <div id="reveal" class="overlay" hidden>
+    <div class="dialog reveal-dialog" id="reveal-card"></div>
+  </div>
+
+  <!-- הגדרות -->
+  <div id="settings" class="overlay" hidden>
+    <div class="dialog">
+      <h3>הגדרות</h3>
+      <button id="toggle-sound" class="g-btn g-btn-blue small" type="button"></button>
+      <button id="reset-game" class="g-btn g-btn-danger small" type="button">איפוס המשחק</button>
+      <button id="close-settings" class="g-btn g-btn-light small" type="button">סגירה</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="js/game/main.js"></script>
+</body>
+</html>

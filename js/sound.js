@@ -29,6 +29,9 @@ export function play(kind = 'tap') {
     ctx ??= new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
     if (kind === 'tap') tone(660, 0, 0.1);
+    else if (kind === 'catch') tone(880, 0, 0.08);
+    else if (kind === 'win-s') [784, 1047].forEach((f, i) => tone(f, i * 0.07, 0.12));
+    else if (kind === 'oops') tone(230, 0, 0.16); // נמוך ורך, לא מפחיד
     else [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.09, 0.2));
   } catch {}
 }
