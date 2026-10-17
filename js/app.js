@@ -1,6 +1,7 @@
 import { renderCountdown } from './countdown.js';
 import { initQuiz } from './quiz.js';
 import { sendWhatsApp } from './whatsapp.js';
+import { PLATFORM } from './data.js';
 import { ICONS } from './icons.js';
 import { confetti } from './confetti.js';
 import { play, isMuted, setMuted } from './sound.js';
@@ -28,6 +29,36 @@ function openWhatsApp(item) {
   item.sent = true;
   store('suggestions', items);
   renderItems();
+}
+
+function renderPlatform() {
+  const ul = $('promises');
+  for (const p of PLATFORM) {
+    const li = document.createElement('li');
+    const tile = document.createElement('span');
+    tile.className = `tile ${p.tone}`;
+    tile.innerHTML = ICONS[p.icon];
+    const body = document.createElement('div');
+    const h = document.createElement('h3');
+    h.textContent = p.title;
+    const t = document.createElement('p');
+    t.textContent = p.text;
+    body.append(h, t);
+    if (p.cta) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'promise-cta';
+      b.textContent = p.cta.label;
+      b.addEventListener('click', () => {
+        play('tap');
+        $(p.cta.target).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        $('idea-text').focus({ preventScroll: true });
+      });
+      body.append(b);
+    }
+    li.append(tile, body);
+    ul.append(li);
+  }
 }
 
 function renderItems() {
@@ -107,6 +138,7 @@ function init() {
   document.querySelectorAll('[data-icon]').forEach((n) => { n.innerHTML = ICONS[n.dataset.icon]; });
   const countdown = () => renderCountdown($('count-num'), $('count-big'), $('count-small'));
   countdown();
+  renderPlatform();
   initQuiz($('quiz'));
   renderItems();
   setupInstallHint();
