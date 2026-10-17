@@ -1,6 +1,7 @@
 import { renderCountdown } from './countdown.js';
 import { initQuiz } from './quiz.js';
 import { sendWhatsApp } from './whatsapp.js';
+import { ICONS } from './icons.js';
 import { confetti } from './confetti.js';
 import { play, isMuted, setMuted } from './sound.js';
 import { load, store } from './storage.js';
@@ -37,15 +38,23 @@ function renderItems() {
     const li = document.createElement('li');
     const span = document.createElement('span');
     span.className = item.sent ? 'txt sent' : 'txt';
-    span.textContent = `${item.sent ? '✅ ' : ''}${item.text}`;
+    span.textContent = item.text;
+    if (item.sent) {
+      const done = document.createElement('span');
+      done.className = 'sent-tag';
+      done.textContent = 'נשלח';
+      span.append(done);
+    }
     const send = document.createElement('button');
     send.type = 'button';
-    send.textContent = '📤';
+    send.className = 'row-btn send';
+    send.innerHTML = ICONS.send;
     send.setAttribute('aria-label', 'שלחו לאגם');
     send.addEventListener('click', () => openWhatsApp(item));
     const del = document.createElement('button');
     del.type = 'button';
-    del.textContent = '🗑️';
+    del.className = 'row-btn';
+    del.innerHTML = ICONS.trash;
     del.setAttribute('aria-label', 'מחקו');
     del.addEventListener('click', () => {
       items.splice(i, 1);
@@ -70,21 +79,16 @@ function dropInBox() {
   items = items.slice(0, MAX_ITEMS);
   store('suggestions', items);
 
-  const mailbox = $('mailbox');
-  const note = document.createElement('span');
-  note.className = 'note';
-  note.textContent = '📝';
-  mailbox.append(note);
-  mailbox.classList.remove('drop');
-  void mailbox.offsetWidth;
-  mailbox.classList.add('drop');
-  setTimeout(() => note.remove(), 800);
+  const btn = $('drop');
+  btn.classList.remove('pop');
+  void btn.offsetWidth;
+  btn.classList.add('pop');
 
   confetti();
   play('win');
   $('idea-text').value = '';
   renderItems();
-  toast('ההצעה בקופסה! עכשיו לחצו 📤 לשליחה לאגם');
+  toast('ההצעה בקופסה! עכשיו שלחו אותה לאגם');
 }
 
 function setupInstallHint() {
@@ -100,7 +104,9 @@ function setupInstallHint() {
 }
 
 function init() {
-  renderCountdown($('count-big'), $('count-small'));
+  document.querySelectorAll('[data-icon]').forEach((n) => { n.innerHTML = ICONS[n.dataset.icon]; });
+  const countdown = () => renderCountdown($('count-num'), $('count-big'), $('count-small'));
+  countdown();
   initQuiz($('quiz'));
   renderItems();
   setupInstallHint();
@@ -108,7 +114,7 @@ function init() {
 
   const mute = $('mute');
   const syncMute = () => {
-    mute.textContent = isMuted() ? '🔇' : '🔊';
+    mute.innerHTML = isMuted() ? ICONS.muted : ICONS.speaker;
     mute.setAttribute('aria-pressed', String(isMuted()));
   };
   syncMute();
@@ -122,7 +128,7 @@ function init() {
 
   // רענון הספירה לאחור כשחוזרים לאפליקציה ביום אחר
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) renderCountdown($('count-big'), $('count-small'));
+    if (!document.hidden) countdown();
   });
 
   if ('serviceWorker' in navigator) {

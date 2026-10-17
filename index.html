@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#7c3aed">
+  <meta name="theme-color" content="#6d28d9">
   <title>אגם למועצה</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preload" href="fonts/Rubik-subset.woff2" as="font" type="font/woff2" crossorigin>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="אגם למועצה">
@@ -18,52 +19,83 @@
   <canvas id="confetti" aria-hidden="true"></canvas>
 
   <header class="hero">
-    <button id="mute" class="icon-btn" type="button" aria-label="צלילים" aria-pressed="false">🔊</button>
-    <div class="badge">🗳️</div>
+    <button id="mute" class="icon-btn" type="button" aria-label="צלילים" aria-pressed="false"></button>
+    <svg class="logo" viewBox="0 0 96 96" role="img" aria-label="קלפי הצבעה">
+      <circle cx="48" cy="48" r="46" fill="#fff"/>
+      <g transform="rotate(-8 48 34)">
+        <rect x="34" y="16" width="28" height="32" rx="4" fill="#fff" stroke="#ec4899" stroke-width="3"/>
+        <path d="m41 32 5 5 9-11" stroke="#22c55e" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <rect x="20" y="46" width="56" height="30" rx="7" fill="#7c3aed"/>
+      <rect x="31" y="43" width="34" height="7" rx="3.5" fill="#4c1d95"/>
+      <path d="M26 66h44" stroke="#fde047" stroke-width="3" stroke-linecap="round"/>
+    </svg>
     <h1>אגם למועצה!</h1>
-    <p class="tagline">כל הכיתה מרוצה!</p>
+    <p class="tagline">כל הכיתה מרוצה</p>
     <p class="class-name">ד3 יסמין</p>
   </header>
 
   <main>
     <section class="card countdown" aria-live="polite">
-      <div id="count-big" class="count-big">…</div>
-      <div id="count-small" class="count-small"></div>
+      <div id="count-num" class="count-num">…</div>
+      <div class="count-text">
+        <div id="count-big" class="count-big"></div>
+        <div id="count-small" class="count-small"></div>
+      </div>
     </section>
 
     <section class="card">
-      <h2>🎯 כמה אתה מכיר את אגם?</h2>
+      <div class="sec-head">
+        <span class="tile t-purple" data-icon="target"></span>
+        <div>
+          <h2>כמה אתה מכיר את אגם?</h2>
+          <p class="hint">5 שאלות קצרות, ובסוף מקבלים תעודה</p>
+        </div>
+      </div>
       <div id="quiz"></div>
     </section>
 
     <section class="card">
-      <h2>📮 קופסת ההצעות</h2>
-      <p class="hint">מה אגם תעשה בשבילך אם תיבחר?</p>
+      <div class="sec-head">
+        <span class="tile t-pink" data-icon="mail"></span>
+        <div>
+          <h2>קופסת ההצעות</h2>
+          <p class="hint">מה אגם תעשה בשבילך אם תיבחר?</p>
+        </div>
+      </div>
 
-      <div id="mailbox" class="mailbox" aria-hidden="true">📮</div>
-
-      <label class="slot-title" for="idea-text">ההצעה שלך</label>
+      <label class="label" for="idea-text">ההצעה שלך</label>
       <textarea id="idea-text" class="field" rows="3" maxlength="100" placeholder="כתבו כאן הצעה קצרה…"></textarea>
 
-      <label class="slot-title" for="idea-name">השם שלך (לא חובה)</label>
+      <label class="label" for="idea-name">השם שלך (לא חובה)</label>
       <input id="idea-name" class="field" type="text" maxlength="20" autocomplete="off" placeholder="למשל: נועה">
 
-      <button id="drop" class="btn btn-big" type="button">📥 שימו בקופסה!</button>
+      <button id="drop" class="btn btn-block" type="button">שימו בקופסה!</button>
     </section>
 
     <section class="card" id="saved-card" hidden>
-      <h2>📥 ההצעות שבקופסה</h2>
-      <p class="hint">לחצו 📤 כדי לשלוח לאגם בוואטסאפ</p>
+      <div class="sec-head">
+        <span class="tile t-green" data-icon="check"></span>
+        <div>
+          <h2>ההצעות שבקופסה</h2>
+          <p class="hint">לחצו על חץ השליחה כדי לשלוח לאגם בוואטסאפ</p>
+        </div>
+      </div>
       <ul id="saved" class="saved"></ul>
     </section>
 
-    <section class="card install" id="install-card">
-      <h2>📱 שימו אותי במסך הבית</h2>
-      <p id="install-text" class="hint"></p>
+    <section class="card" id="install-card">
+      <div class="sec-head">
+        <span class="tile t-yellow" data-icon="phone"></span>
+        <div>
+          <h2>שימו אותי במסך הבית</h2>
+          <p id="install-text" class="hint"></p>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer>אגם למועצה – כל הכיתה מרוצה! 💜</footer>
+  <footer>אגם למועצה – כל הכיתה מרוצה</footer>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script type="module" src="js/app.js"></script>

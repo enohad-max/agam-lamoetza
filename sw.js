@@ -1,5 +1,5 @@
 // להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
-const CACHE = 'agam-v5';
+const CACHE = 'agam-v7';
 const ASSETS = [
   './',
   'index.html',
@@ -14,6 +14,8 @@ const ASSETS = [
   'js/quiz.js',
   'js/certificate.js',
   'js/whatsapp.js',
+  'js/icons.js',
+  'fonts/Rubik-subset.woff2',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
