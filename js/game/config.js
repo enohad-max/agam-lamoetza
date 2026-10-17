@@ -4,7 +4,7 @@ export const CONFIG = {
   title: 'אגם במועצה',
   slogan: 'כל הכיתה מרוצה!',
   fullSlogan: 'אגם במועצה – כל הכיתה מרוצה!',
-  gameName: 'אוספים רעיונות עם אגם',
+  gameName: 'גשם של רעיונות לאגם',
   tagline: 'עזרו לאגם לאסוף רעיונות ולבנות את הכיתה הכי כיפית שיש!',
   closing: 'כל רעיון יכול לעשות שינוי.',
 
@@ -64,10 +64,8 @@ export const GOOD = [
   { id: 'gold', emoji: '🌟', tier: 'gold', points: 0 },
 ];
 
-// פריטים שכדאי להימנע מהם – בלי אווירה שלילית. draw = ציור מותאם על ה-canvas.
+// הפריט שאסור לתפוס: פצצה מצוירת (בלי פיצוץ ובלי אווירה מפחידה), מורידה נקודות בלבד.
+// draw = ציור מותאם על ה-canvas.
 export const BAD = [
-  { id: 'paper', draw: 'paper' },
-  { id: 'ink', draw: 'ink' },
-  { id: 'banana', emoji: '🍌' },
-  { id: 'cloud', emoji: '☁️' },
+  { id: 'bomb', draw: 'bomb' },
 ];

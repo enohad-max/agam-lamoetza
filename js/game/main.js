@@ -46,8 +46,8 @@ function show(name) {
 /* ---------- מסך ראשי ---------- */
 function renderHome() {
   $('home-avatar').innerHTML = avatarHTML();
-  $('home-title').textContent = CONFIG.title;
-  $('home-slogan').textContent = CONFIG.slogan;
+  $('home-title').textContent = CONFIG.gameName;
+  $('home-slogan').textContent = CONFIG.fullSlogan;
   $('home-tagline').textContent = CONFIG.tagline;
   $('home-value').textContent = pickOne(CONFIG.values);
   $('home-progress').textContent = `${getState().owned.length} מתוך ${ITEMS.length}`;
@@ -60,6 +60,22 @@ function setHud({ score, time, ideas }) {
   $('hud-score').textContent = score;
   $('hud-time').textContent = time;
   $('hud-ideas').textContent = ideas;
+
+  // 5 השניות האחרונות: ספירה גדולה במרכז המסך
+  const last = time > 0 && time <= 5;
+  $('hud-time').parentElement.classList.toggle('urgent', last);
+  const big = $('final-count');
+  if (!last) {
+    big.classList.remove('on', 'tick');
+    return;
+  }
+  if (big.textContent !== String(time) || !big.classList.contains('on')) {
+    big.textContent = time;
+    big.classList.remove('tick');
+    void big.offsetWidth;
+    big.classList.add('on', 'tick');
+    play('tap');
+  }
 }
 
 function banner(text) {

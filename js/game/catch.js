@@ -225,8 +225,7 @@ export class CatchGame {
     g.save();
     g.translate(it.x, it.y);
     g.rotate(Math.sin(it.rot) * 0.35);
-    if (def.draw === 'paper') this.drawPaper(g, size);
-    else if (def.draw === 'ink') this.drawInk(g, size);
+    if (def.draw === 'bomb') this.drawBomb(g, size);
     else {
       if (def.tier === 'gold') {
         g.shadowColor = 'rgba(250,204,21,.9)';
@@ -240,32 +239,31 @@ export class CatchGame {
     g.restore();
   }
 
-  drawPaper(g, s) {
-    g.fillStyle = '#f1f5f9';
-    g.strokeStyle = '#94a3b8';
-    g.lineWidth = 2;
+  // פצצה מצוירת: גוף שחור, פתיל עם ניצוץ, והילה אדומה שמסמנת "לא לתפוס"
+  drawBomb(g, s) {
+    const r = s * 0.36;
+    const cy = s * 0.08;
+    g.fillStyle = 'rgba(239, 68, 68, .25)';
+    g.beginPath(); g.arc(0, cy, r * 1.38, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#1f2937';
+    g.beginPath(); g.arc(0, cy, r, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(255, 255, 255, .38)';
+    g.beginPath(); g.arc(-r * 0.38, cy - r * 0.34, r * 0.2, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#4b5563';
+    g.beginPath(); g.roundRect(-r * 0.32, cy - r * 1.18, r * 0.64, r * 0.4, 3); g.fill();
+    g.strokeStyle = '#a16207';
+    g.lineWidth = 3;
+    g.lineCap = 'round';
     g.beginPath();
-    const n = 9;
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2;
-      const r = s * (i % 2 ? 0.34 : 0.46);
-      g.lineTo(Math.cos(a) * r, Math.sin(a) * r);
-    }
-    g.closePath();
-    g.fill();
+    g.moveTo(0, cy - r * 1.15);
+    g.quadraticCurveTo(r * 0.2, cy - r * 1.55, r * 0.6, cy - r * 1.5);
     g.stroke();
-    g.beginPath();
-    g.moveTo(-s * 0.15, -s * 0.1); g.lineTo(s * 0.1, s * 0.05); g.lineTo(-s * 0.05, s * 0.2);
-    g.stroke();
-  }
-
-  drawInk(g, s) {
-    g.fillStyle = '#1e3a8a';
-    g.beginPath(); g.arc(0, 0, s * 0.34, 0, Math.PI * 2); g.fill();
-    g.beginPath(); g.arc(s * 0.3, -s * 0.12, s * 0.12, 0, Math.PI * 2); g.fill();
-    g.beginPath(); g.arc(-s * 0.28, s * 0.2, s * 0.1, 0, Math.PI * 2); g.fill();
-    g.fillStyle = 'rgba(255,255,255,.55)';
-    g.beginPath(); g.arc(-s * 0.1, -s * 0.1, s * 0.07, 0, Math.PI * 2); g.fill();
+    // ניצוץ מהבהב
+    const pulse = 0.75 + 0.25 * Math.sin(performance.now() / 70);
+    g.fillStyle = '#f97316';
+    g.beginPath(); g.arc(r * 0.64, cy - r * 1.5, r * 0.26 * pulse, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#fde047';
+    g.beginPath(); g.arc(r * 0.64, cy - r * 1.5, r * 0.13 * pulse, 0, Math.PI * 2); g.fill();
   }
 
   drawBasket(g) {
