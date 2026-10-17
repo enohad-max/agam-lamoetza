@@ -1,5 +1,7 @@
-import { IDEAS, WHATSAPP_NUMBER } from './data.js';
+import { IDEAS } from './data.js';
 import { renderCountdown } from './countdown.js';
+import { initQuiz } from './quiz.js';
+import { sendWhatsApp } from './whatsapp.js';
 import { confetti } from './confetti.js';
 import { play, isMuted, setMuted } from './sound.js';
 import { load, store } from './storage.js';
@@ -22,8 +24,7 @@ function messageOf(item) {
 }
 
 function openWhatsApp(item) {
-  const base = WHATSAPP_NUMBER ? `https://wa.me/${WHATSAPP_NUMBER}` : 'https://wa.me/';
-  window.open(`${base}?text=${encodeURIComponent(messageOf(item))}`, '_blank', 'noopener');
+  sendWhatsApp(messageOf(item));
   item.sent = true;
   store('suggestions', items);
   renderItems();
@@ -118,6 +119,7 @@ function setupInstallHint() {
 
 function init() {
   renderCountdown($('count-big'), $('count-small'));
+  initQuiz($('quiz'));
   renderIdeas();
   renderItems();
   setupInstallHint();

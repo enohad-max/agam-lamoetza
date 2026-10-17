@@ -118,6 +118,34 @@ main { max-width: 560px; margin: 0 auto; padding: 16px; display: grid; gap: 16px
 }
 .field:focus { outline: 3px solid var(--yellow); }
 
+.btn-light { background: #ede9fe; color: var(--purple-dark); box-shadow: 0 4px 0 #c4b5fd; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.actions .btn { flex: 1 1 140px; }
+.big-emoji { text-align: center; font-size: 4rem; }
+
+.dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+.dot { width: 14px; height: 14px; border-radius: 50%; background: #ddd6fe; }
+.dot.now { background: var(--pink); transform: scale(1.3); }
+.dot.done { background: var(--purple); }
+.q-text { font-size: 1.4rem; font-weight: 900; text-align: center; margin: 6px 0 14px; }
+.answers { display: grid; gap: 10px; }
+.answer {
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 3px solid var(--purple);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--purple-dark);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.answer:active:not(:disabled) { transform: scale(.97); }
+.answer.right { background: #22c55e; border-color: #15803d; color: #fff; }
+.answer.wrong { background: #fecaca; border-color: #dc2626; color: #7f1d1d; }
+.answer.picked { background: var(--purple); color: #fff; }
+
 .mailbox { text-align: center; font-size: 4rem; position: relative; height: 90px; line-height: 90px; }
 .mailbox.drop { animation: shake .5s; }
 @keyframes shake { 25% { transform: rotate(-8deg) scale(1.1); } 60% { transform: rotate(8deg) scale(1.1); } }
