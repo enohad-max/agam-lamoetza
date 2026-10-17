@@ -114,7 +114,7 @@ export function initQuiz(root) {
   function summary() {
     const who = name || 'חבר/ה מד3';
     const lines = answers.map((a) => `• ${a.label}: ${a.text}`);
-    return `📋 תשובות מהשאלון מ${who}\nידע/ה ${score} מתוך ${KNOWLEDGE} על אגם 🎯\n${lines.join('\n')}`;
+    return `📋 תשובות מהשאלון מ${who}\nענה/תה נכון על ${score} מתוך ${KNOWLEDGE} שאלות על אגם 🎯\n${lines.join('\n')}`;
   }
 
   function renderResult() {
@@ -123,8 +123,8 @@ export function initQuiz(root) {
     play('win');
     root.append(
       el('div', 'big-emoji', score === KNOWLEDGE ? '🏆' : '🎉'),
-      el('div', 'q-text', `ידעת ${score} מתוך ${KNOWLEDGE} על אגם!`),
-      el('p', 'hint center', score === KNOWLEDGE ? 'וואו, אתה מכיר אותה מצוין!' : 'כמעט! עכשיו אתה מכיר אותה יותר.'),
+      el('div', 'q-text', `ענית נכון על ${score} מתוך ${KNOWLEDGE}!`),
+      el('p', 'hint center', score === KNOWLEDGE ? 'וואו, מכירים את אגם מצוין!' : 'כמעט! עכשיו מכירים את אגם קצת יותר.'),
     );
     const actions = el('div', 'actions');
     actions.append(
