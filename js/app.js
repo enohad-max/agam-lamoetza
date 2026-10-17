@@ -143,6 +143,14 @@ function init() {
   });
 
   if ('serviceWorker' in navigator) {
+    // כשגרסה חדשה משתלטת – טוענים מחדש פעם אחת כדי להציג אותה מיד
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
 }

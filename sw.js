@@ -1,5 +1,5 @@
 // להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
-const CACHE = 'agam-v2';
+const CACHE = 'agam-v3';
 const ASSETS = [
   './',
   'index.html',
@@ -28,9 +28,22 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// קודם הרשת (כדי שעדכונים יופיעו מיד), ואם אין רשת או שהיא איטית – מהמטמון
 self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return;
+  const { request } = e;
+  if (request.method !== 'GET' || new URL(request.url).origin !== location.origin) return;
+
+  const fromCache = () => caches.match(request, { ignoreSearch: true });
+  const fromNetwork = fetch(request).then((res) => {
+    if (res.ok) {
+      const copy = res.clone();
+      caches.open(CACHE).then((c) => c.put(request, copy));
+    }
+    return res;
+  });
+  const timeout = new Promise((_, reject) => setTimeout(reject, 3000));
+
   e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then((hit) => hit || fetch(e.request))
+    Promise.race([fromNetwork, timeout]).catch(() => fromCache().then((hit) => hit || fromNetwork))
   );
 });
