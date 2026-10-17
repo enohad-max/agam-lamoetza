@@ -1,14 +1,12 @@
-const KEY = 'saved-slogans';
-
-export function loadSaved() {
+export function load(key, fallback) {
   try {
-    const list = JSON.parse(localStorage.getItem(KEY) || '[]');
-    return Array.isArray(list) ? list.filter((s) => typeof s === 'string') : [];
+    const v = JSON.parse(localStorage.getItem(key));
+    return v ?? fallback;
   } catch {
-    return [];
+    return fallback;
   }
 }
 
-export function storeSaved(list) {
-  try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {}
+export function store(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
 }

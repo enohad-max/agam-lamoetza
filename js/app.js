@@ -1,114 +1,107 @@
-import { SLOTS } from './data.js';
+import { IDEAS, WHATSAPP_NUMBER } from './data.js';
 import { renderCountdown } from './countdown.js';
 import { confetti } from './confetti.js';
 import { play, isMuted, setMuted } from './sound.js';
-import { loadSaved, storeSaved } from './storage.js';
+import { load, store } from './storage.js';
 
 const $ = (id) => document.getElementById(id);
-const choice = { a: null, b: null, c: null };
-let saved = loadSaved();
-let currentSlogan = '';
-
-const sloganOf = ({ a, b, c }) => `${a} - ${b}! ${c}`;
+const MAX_ITEMS = 30;
+let items = load('suggestions', []).filter((i) => i && typeof i.text === 'string');
 
 function toast(msg) {
   const el = $('toast');
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toast.t);
-  toast.t = setTimeout(() => el.classList.remove('show'), 1800);
+  toast.t = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-function shareText(slogan) {
-  return `${slogan}\n\n🗳️ בחירות ביום שישי 23.10 – מצביעים אגם!\n${location.href.split('#')[0]}`;
+function messageOf(item) {
+  const who = item.name ? item.name : 'חבר/ה מד3';
+  return `📮 הצעה למועצה מ${who}:\n${item.text}`;
 }
 
-function renderChips() {
-  for (const slot of Object.keys(SLOTS)) {
-    const box = $(`chips-${slot}`);
-    box.replaceChildren();
-    for (const opt of SLOTS[slot]) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'chip';
-      b.textContent = opt.label;
-      b.setAttribute('aria-pressed', String(choice[slot] === opt.text));
-      b.addEventListener('click', () => {
-        choice[slot] = opt.text;
-        play('tap');
-        renderChips();
-        update(false);
-      });
-      box.append(b);
-    }
+function openWhatsApp(item) {
+  const base = WHATSAPP_NUMBER ? `https://wa.me/${WHATSAPP_NUMBER}` : 'https://wa.me/';
+  window.open(`${base}?text=${encodeURIComponent(messageOf(item))}`, '_blank', 'noopener');
+  item.sent = true;
+  store('suggestions', items);
+  renderItems();
+}
+
+function renderIdeas() {
+  const box = $('ideas');
+  for (const idea of IDEAS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.textContent = idea;
+    b.addEventListener('click', () => {
+      // מורידים את האימוג'י מההתחלה כדי שההצעה תהיה טקסט נקי
+      $('idea-text').value = idea.replace(/^\S+\s/, '');
+      play('tap');
+      $('idea-text').focus();
+    });
+    box.append(b);
   }
 }
 
-function update(celebrate) {
-  const ready = choice.a && choice.b && choice.c;
-  $('result').hidden = !ready;
-  if (!ready) return;
-  currentSlogan = sloganOf(choice);
-  $('slogan').textContent = currentSlogan;
-  if (celebrate || !update.shown) {
-    confetti();
-    play('win');
-  }
-  update.shown = true;
-}
-
-function pick(list) {
-  return list[Math.floor(Math.random() * list.length)].text;
-}
-
-function renderSaved() {
-  $('saved-card').hidden = saved.length === 0;
+function renderItems() {
+  $('saved-card').hidden = items.length === 0;
   const ul = $('saved');
   ul.replaceChildren();
-  saved.forEach((text, i) => {
+  items.forEach((item, i) => {
     const li = document.createElement('li');
     const span = document.createElement('span');
-    span.className = 'txt';
-    span.textContent = text;
+    span.className = item.sent ? 'txt sent' : 'txt';
+    span.textContent = `${item.sent ? '✅ ' : ''}${item.text}`;
     const send = document.createElement('button');
     send.type = 'button';
     send.textContent = '📤';
-    send.setAttribute('aria-label', 'שלחו');
-    send.addEventListener('click', () => openWhatsApp(text));
+    send.setAttribute('aria-label', 'שלחו לאגם');
+    send.addEventListener('click', () => openWhatsApp(item));
     const del = document.createElement('button');
     del.type = 'button';
     del.textContent = '🗑️';
     del.setAttribute('aria-label', 'מחקו');
     del.addEventListener('click', () => {
-      saved.splice(i, 1);
-      storeSaved(saved);
-      renderSaved();
+      items.splice(i, 1);
+      store('suggestions', items);
+      renderItems();
     });
     li.append(span, send, del);
     ul.append(li);
   });
 }
 
-function openWhatsApp(slogan) {
-  window.open(`https://wa.me/?text=${encodeURIComponent(shareText(slogan))}`, '_blank', 'noopener');
-}
-
-async function copyText(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.append(ta);
-    ta.select();
-    let ok = false;
-    try { ok = document.execCommand('copy'); } catch {}
-    ta.remove();
-    return ok;
+function dropInBox() {
+  const text = $('idea-text').value.trim();
+  if (text.length < 3) {
+    toast('כתבו הצעה קצרה קודם ✏️');
+    $('idea-text').focus();
+    return;
   }
+  const name = $('idea-name').value.trim();
+  store('my-name', name);
+  items.unshift({ text, name, sent: false });
+  items = items.slice(0, MAX_ITEMS);
+  store('suggestions', items);
+
+  const mailbox = $('mailbox');
+  const note = document.createElement('span');
+  note.className = 'note';
+  note.textContent = '📝';
+  mailbox.append(note);
+  mailbox.classList.remove('drop');
+  void mailbox.offsetWidth;
+  mailbox.classList.add('drop');
+  setTimeout(() => note.remove(), 800);
+
+  confetti();
+  play('win');
+  $('idea-text').value = '';
+  renderItems();
+  toast('ההצעה בקופסה! עכשיו לחצו 📤 לשליחה לאגם');
 }
 
 function setupInstallHint() {
@@ -125,9 +118,10 @@ function setupInstallHint() {
 
 function init() {
   renderCountdown($('count-big'), $('count-small'));
-  renderChips();
-  renderSaved();
+  renderIdeas();
+  renderItems();
   setupInstallHint();
+  $('idea-name').value = load('my-name', '');
 
   const mute = $('mute');
   const syncMute = () => {
@@ -141,36 +135,7 @@ function init() {
     play('tap');
   });
 
-  $('surprise').addEventListener('click', () => {
-    for (const slot of Object.keys(SLOTS)) choice[slot] = pick(SLOTS[slot]);
-    renderChips();
-    update(true);
-  });
-
-  $('share-wa').addEventListener('click', () => openWhatsApp(currentSlogan));
-
-  if (navigator.share) {
-    const btn = $('share-native');
-    btn.hidden = false;
-    btn.addEventListener('click', () => {
-      navigator.share({ text: shareText(currentSlogan) }).catch(() => {});
-    });
-  }
-
-  $('copy').addEventListener('click', async () => {
-    toast((await copyText(shareText(currentSlogan))) ? 'הועתק! 📋' : 'לא הצלחנו להעתיק');
-  });
-
-  $('save').addEventListener('click', () => {
-    if (!saved.includes(currentSlogan)) {
-      saved.unshift(currentSlogan);
-      saved = saved.slice(0, 20);
-      storeSaved(saved);
-      renderSaved();
-    }
-    play('tap');
-    toast('נשמר! ⭐');
-  });
+  $('drop').addEventListener('click', dropInBox);
 
   // רענון הספירה לאחור כשחוזרים לאפליקציה ביום אחר
   document.addEventListener('visibilitychange', () => {

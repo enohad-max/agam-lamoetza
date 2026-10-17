@@ -72,8 +72,7 @@ main { max-width: 560px; margin: 0 auto; padding: 16px; display: grid; gap: 16px
 .count-big { font-size: 2.2rem; font-weight: 900; }
 .count-small { font-weight: 700; }
 
-.slot { margin: 12px 0; }
-.slot-title { font-weight: 800; margin-bottom: 6px; }
+.slot-title { display: block; font-weight: 800; margin: 14px 0 6px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .chip {
@@ -107,24 +106,35 @@ main { max-width: 560px; margin: 0 auto; padding: 16px; display: grid; gap: 16px
 .btn-big { width: 100%; margin-top: 10px; font-size: 1.3rem; background: var(--pink); box-shadow: 0 4px 0 #be185d; }
 .btn-wa { background: #16a34a; box-shadow: 0 4px 0 #166534; }
 
-.result { margin-top: 16px; animation: pop .35s ease; }
-@keyframes pop { from { transform: scale(.85); opacity: 0; } }
-.slogan {
-  background: linear-gradient(135deg, #f3e8ff, #fce7f3);
-  border: 3px dashed var(--purple);
-  border-radius: 18px;
-  padding: 18px 14px;
-  text-align: center;
-  font-size: 1.6rem;
-  font-weight: 900;
-  overflow-wrap: anywhere;
+.field {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 3px solid var(--purple);
+  border-radius: 16px;
+  font: inherit;
+  color: var(--ink);
+  background: #fff;
 }
-.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-.actions .btn { flex: 1 1 140px; }
+.field:focus { outline: 3px solid var(--yellow); }
+
+.mailbox { text-align: center; font-size: 4rem; position: relative; height: 90px; line-height: 90px; }
+.mailbox.drop { animation: shake .5s; }
+@keyframes shake { 25% { transform: rotate(-8deg) scale(1.1); } 60% { transform: rotate(8deg) scale(1.1); } }
+.note {
+  position: absolute;
+  inset-inline-start: 50%;
+  top: 100%;
+  font-size: 2rem;
+  line-height: 1;
+  animation: fly .7s ease-in forwards;
+}
+@keyframes fly { to { top: 30%; transform: scale(.3) rotate(25deg); opacity: 0; } }
 
 .saved { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .saved li { background: #faf5ff; border-radius: 14px; padding: 10px 12px; display: flex; gap: 8px; align-items: center; }
 .saved .txt { flex: 1; font-weight: 700; overflow-wrap: anywhere; }
+.saved .sent { opacity: .6; }
 .saved button { min-width: 48px; min-height: 48px; border: 0; border-radius: 12px; background: #fff; font-size: 1.2rem; cursor: pointer; }
 
 footer { text-align: center; padding: 12px 16px 28px; font-weight: 700; opacity: .7; }
@@ -147,5 +157,5 @@ footer { text-align: center; padding: 12px 16px 28px; font-weight: 700; opacity:
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 @media (prefers-reduced-motion: reduce) {
-  .badge, .result { animation: none; }
+  .badge, .mailbox.drop, .note { animation: none; }
 }

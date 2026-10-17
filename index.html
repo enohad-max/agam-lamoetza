@@ -32,28 +32,26 @@
     </section>
 
     <section class="card">
-      <h2>🎉 מחולל סלוגנים</h2>
-      <p class="hint">בחרו מילה בכל שורה, או לחצו על ההפתעה!</p>
+      <h2>📮 קופסת ההצעות</h2>
+      <p class="hint">מה אגם תעשה בשבילך אם תיבחר?</p>
 
-      <div class="slot" data-slot="a"><div class="slot-title">1. מי?</div><div class="chips" id="chips-a"></div></div>
-      <div class="slot" data-slot="b"><div class="slot-title">2. למה?</div><div class="chips" id="chips-b"></div></div>
-      <div class="slot" data-slot="c"><div class="slot-title">3. צעקה!</div><div class="chips" id="chips-c"></div></div>
+      <div id="mailbox" class="mailbox" aria-hidden="true">📮</div>
 
-      <button id="surprise" class="btn btn-big" type="button">🎲 הפתיעו אותי!</button>
+      <div class="slot-title">רעיונות מוכנים (לחצו!)</div>
+      <div class="chips" id="ideas"></div>
 
-      <div id="result" class="result" hidden>
-        <div id="slogan" class="slogan"></div>
-        <div class="actions">
-          <button id="share-wa" class="btn btn-wa" type="button">שלחו ב-WhatsApp</button>
-          <button id="share-native" class="btn" type="button" hidden>שתפו…</button>
-          <button id="copy" class="btn" type="button">📋 העתיקו</button>
-          <button id="save" class="btn" type="button">⭐ שמרו</button>
-        </div>
-      </div>
+      <label class="slot-title" for="idea-text">ההצעה שלך</label>
+      <textarea id="idea-text" class="field" rows="3" maxlength="100" placeholder="כתבו כאן הצעה קצרה…"></textarea>
+
+      <label class="slot-title" for="idea-name">השם שלך (לא חובה)</label>
+      <input id="idea-name" class="field" type="text" maxlength="20" autocomplete="off" placeholder="למשל: נועה">
+
+      <button id="drop" class="btn btn-big" type="button">📥 שימו בקופסה!</button>
     </section>
 
     <section class="card" id="saved-card" hidden>
-      <h2>⭐ הסלוגנים ששמרתי</h2>
+      <h2>📥 ההצעות שבקופסה</h2>
+      <p class="hint">לחצו 📤 כדי לשלוח לאגם בוואטסאפ</p>
       <ul id="saved" class="saved"></ul>
     </section>
 
