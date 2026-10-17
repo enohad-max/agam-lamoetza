@@ -50,7 +50,7 @@
       <div id="banner" class="banner" aria-live="polite"></div>
       <div id="final-count" class="final-count" aria-hidden="true"></div>
       <div id="countdown" class="countdown-overlay"></div>
-      <div id="play-hint" class="play-hint">גררו את האצבע ימינה ושמאלה כדי לתפוס (במחשב: חצים)</div>
+      <div id="play-hint" class="play-hint">גררו את האצבע ימינה ושמאלה כדי לתפוס</div>
     </div>
   </section>
 
@@ -79,12 +79,14 @@
       <button class="g-back" data-go="home" type="button">‹ בית</button>
       <h2>הכיתה שלי</h2>
     </header>
+    <div class="scene-wrap"><div id="scene" class="scene"></div></div>
     <main class="g-main">
       <p id="class-hint" class="g-sub"></p>
-      <div id="room" class="room"></div>
-      <h3 class="g-h3">הפריטים שלי</h3>
-      <div id="tray" class="tray"></div>
-      <p id="tray-empty" class="g-sub" hidden>עוד אין פריטים. שחקו משחק כדי לקבל את הראשון!</p>
+      <p id="class-count" class="class-count"></p>
+      <div class="class-actions">
+        <button id="place-all" class="g-btn g-btn-blue small" type="button">✨ הניחו הכול</button>
+        <button id="clear-class" class="g-btn g-btn-light small" type="button">נקו את הכיתה</button>
+      </div>
     </main>
   </section>
 

@@ -1,5 +1,6 @@
 import { CONFIG } from './config.js';
-import { ITEMS, ZONES, RARITIES, ITEM_BY_ID, ZONE_BY_ID } from './items.js';
+import { ITEMS, RARITIES } from './items.js';
+import { SCENE_SVG, SCENE_HEIGHT } from './scene.js';
 import { getState, update, resetState, placedCount } from './state.js';
 import { CatchGame } from './catch.js';
 import { rollReward, unlockWithStars } from './rewards.js';
@@ -13,7 +14,6 @@ const $ = (id) => document.getElementById(id);
 const SCREENS = ['home', 'play', 'result', 'class', 'collection'];
 const pickOne = (list) => list[Math.floor(Math.random() * list.length)];
 
-let selectedId = null;
 let countdownTimer;
 let bannerTimer;
 let toastTimer;
@@ -184,28 +184,15 @@ function renderResult(result, reward, fresh, newBest) {
 }
 
 /* ---------- הכיתה שלי ---------- */
-function removePlaced(id) {
-  const zone = ITEM_BY_ID[id].zone;
-  update((s) => { s.placed[zone] = (s.placed[zone] || []).filter((x) => x !== id); });
-}
+let lastPlaced = null;
 
-function placeSelected(zoneId) {
-  const item = ITEM_BY_ID[selectedId];
-  if (!item) return;
-  if (item.zone !== zoneId) {
-    toast(`${item.name} שייך ל${ZONE_BY_ID[item.zone].name}`);
-    return;
-  }
-  const zone = ZONE_BY_ID[zoneId];
-  if ((getState().placed[zoneId] || []).length >= zone.slots) {
-    toast('המקום מלא – לחצו על פריט כדי להסיר אותו');
-    return;
-  }
+function placeItem(id) {
+  if (getState().placed.includes(id)) return;
   update((s) => {
-    (s.placed[zoneId] ||= []).push(item.id);
+    s.placed.push(id);
     s.placedEver += 1;
   });
-  selectedId = null;
+  lastPlaced = id;
   play('win-s');
   const fresh = checkAchievements();
   if (fresh.length) {
@@ -217,57 +204,67 @@ function placeSelected(zoneId) {
 
 function renderClass() {
   const state = getState();
-  const selected = ITEM_BY_ID[selectedId];
-  $('class-hint').textContent = selected
-    ? `לחצו על ${ZONE_BY_ID[selected.zone].name} כדי להציב: ${selected.name}`
-    : 'בחרו פריט למטה, ואז לחצו על המקום שלו בכיתה';
+  const scene = $('scene');
+  scene.replaceChildren();
+  scene.insertAdjacentHTML('afterbegin', SCENE_SVG);
+  scene.style.setProperty('--u', `${scene.clientWidth / 100}px`);
 
-  const room = $('room');
-  room.replaceChildren();
-  for (const z of ZONES) {
-    const zone = el('div', `zone zone-${z.id}`);
-    if (selected?.zone === z.id) zone.classList.add('glow');
-    zone.addEventListener('click', () => placeSelected(z.id));
-    zone.append(el('span', 'zone-label', z.name));
-    const ids = state.placed[z.id] || [];
-    const row = el('div', 'zone-items');
-    for (const id of ids) {
-      const b = el('button', 'placed-item', ITEM_BY_ID[id].emoji);
-      b.type = 'button';
-      b.setAttribute('aria-label', `הסר ${ITEM_BY_ID[id].name}`);
-      b.addEventListener('click', (e) => {
-        e.stopPropagation();
-        removePlaced(id);
-        play('tap');
-        renderClass();
-      });
-      row.append(b);
-    }
-    if (!ids.length) row.append(el('span', 'zone-empty', '＋'));
-    zone.append(row);
-    room.append(zone);
-  }
-
-  const tray = $('tray');
-  tray.replaceChildren();
-  const owned = ITEMS.filter((i) => state.owned.includes(i.id));
-  $('tray-empty').hidden = owned.length > 0;
-  for (const item of owned) {
-    const placed = (state.placed[item.zone] || []).includes(item.id);
-    const b = el('button', 'tray-item');
+  for (const item of ITEMS) {
+    if (!state.owned.includes(item.id)) continue;
+    const placed = state.placed.includes(item.id);
+    const [x, y, size] = item.pos;
+    const b = el('button', placed ? 'spot placed' : 'spot ghost', item.emoji);
     b.type = 'button';
-    b.style.setProperty('--c', RARITIES[item.rarity].color);
-    if (placed) b.classList.add('is-placed');
-    if (selectedId === item.id) b.classList.add('is-selected');
-    b.append(el('span', 'ti-emoji', item.emoji), el('span', 'ti-name', placed ? '✓ מוצב' : item.name));
+    b.style.left = `${x}%`;
+    b.style.top = `${(y / SCENE_HEIGHT) * 100}%`;
+    b.style.setProperty('--s', size);
+    b.style.setProperty('--d', `${(Math.random() * 2).toFixed(2)}s`);
+    if (item.id === lastPlaced) b.classList.add('just');
+    b.setAttribute('aria-label', placed ? item.name : `הניחו: ${item.name}`);
     b.addEventListener('click', () => {
+      if (!placed) return placeItem(item.id);
       play('tap');
-      if (placed) removePlaced(item.id);
-      else selectedId = selectedId === item.id ? null : item.id;
-      renderClass();
+      toast(item.name);
+      b.classList.remove('wiggle');
+      void b.offsetWidth;
+      b.classList.add('wiggle');
     });
-    tray.append(b);
+    scene.append(b);
   }
+  lastPlaced = null;
+
+  const owned = state.owned.length;
+  const waiting = owned - state.placed.length;
+  $('class-hint').textContent = owned === 0
+    ? 'הכיתה עוד ריקה. שחקו משחק כדי לקבל את הפריט הראשון!'
+    : waiting > 0
+      ? 'לחצו על הפריטים הזוהרים כדי להניח אותם במקום שלהם'
+      : 'הכיתה מסודרת! שחקו עוד כדי להוסיף פריטים';
+  $('class-count').textContent = `${state.placed.length} מתוך ${ITEMS.length} פריטים בכיתה`;
+  $('place-all').hidden = waiting === 0;
+  $('clear-class').hidden = state.placed.length === 0;
+}
+
+function placeAll() {
+  update((s) => {
+    for (const id of s.owned) {
+      if (!s.placed.includes(id)) {
+        s.placed.push(id);
+        s.placedEver += 1;
+      }
+    }
+  });
+  play('win');
+  confetti();
+  const fresh = checkAchievements();
+  if (fresh.length) toast(`הישג חדש: ${fresh[0].name}`);
+  renderClass();
+}
+
+function clearClass() {
+  update((s) => { s.placed = []; });
+  play('tap');
+  renderClass();
 }
 
 /* ---------- האוסף שלי ---------- */
@@ -357,7 +354,6 @@ function setupSettings() {
   $('reset-game').addEventListener('click', () => {
     if (!confirm('למחוק את כל ההתקדמות במשחק? אי אפשר לבטל.')) return;
     resetState();
-    selectedId = null;
     $('settings').hidden = true;
     renderHome();
     toast('המשחק אופס');
@@ -371,6 +367,8 @@ async function init() {
 
   $('go-play').addEventListener('click', () => { play('tap'); startPlay(); });
   $('go-class').addEventListener('click', () => { play('tap'); show('class'); });
+  $('place-all').addEventListener('click', placeAll);
+  $('clear-class').addEventListener('click', clearClass);
   $('go-collection').addEventListener('click', () => { play('tap'); show('collection'); });
   $('exit-play').addEventListener('click', exitPlay);
   $('res-again').addEventListener('click', startPlay);
@@ -378,6 +376,10 @@ async function init() {
   $('res-collection').addEventListener('click', () => show('collection'));
   document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => show(b.dataset.go)));
   setupSettings();
+  window.addEventListener('resize', () => {
+    const sc = $('scene');
+    if (sc.clientWidth) sc.style.setProperty('--u', `${sc.clientWidth / 100}px`);
+  });
   $('to-campaign').href = CONFIG.campaignUrl;
 
   show('home');

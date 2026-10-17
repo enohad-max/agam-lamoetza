@@ -1,5 +1,5 @@
 // להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
-const CACHE = 'agam-v11';
+const CACHE = 'agam-v13';
 const ASSETS = [
   './',
   'index.html',
@@ -20,6 +20,7 @@ const ASSETS = [
   'js/game/main.js',
   'js/game/config.js',
   'js/game/items.js',
+  'js/game/scene.js',
   'js/game/state.js',
   'js/game/catch.js',
   'js/game/rewards.js',

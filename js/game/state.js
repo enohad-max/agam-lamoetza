@@ -1,5 +1,5 @@
 import { load, store } from '../storage.js';
-import { ITEM_BY_ID, ZONE_BY_ID } from './items.js';
+import { ITEM_BY_ID } from './items.js';
 
 // ההתקדמות נשמרת במכשיר בלבד (localStorage). בלי שם ובלי מידע אישי.
 const KEY = 'agam-game';
@@ -14,7 +14,7 @@ const defaults = () => ({
   stars: 0,
   placedEver: 0,
   owned: [],
-  placed: {},
+  placed: [],
   achievements: [],
 });
 
@@ -26,12 +26,10 @@ function sanitize(raw) {
   for (const k of ['best', 'games', 'ideas', 'bulbs', 'goldStars', 'stars', 'placedEver']) s[k] = num(raw[k]);
   s.owned = Array.isArray(raw.owned) ? [...new Set(raw.owned.filter((id) => ITEM_BY_ID[id]))] : [];
   s.achievements = Array.isArray(raw.achievements) ? raw.achievements.filter((a) => typeof a === 'string') : [];
-  if (raw.placed && typeof raw.placed === 'object') {
-    for (const [zone, ids] of Object.entries(raw.placed)) {
-      if (!ZONE_BY_ID[zone] || !Array.isArray(ids)) continue;
-      s.placed[zone] = ids.filter((id) => s.owned.includes(id) && ITEM_BY_ID[id].zone === zone);
-    }
-  }
+  // placed: רשימת פריטים מוצבים (בגרסאות קודמות היה אובייקט לפי אזור – ממירים)
+  const placed = Array.isArray(raw.placed) ? raw.placed
+    : raw.placed && typeof raw.placed === 'object' ? Object.values(raw.placed).flat() : [];
+  s.placed = [...new Set(placed.filter((id) => s.owned.includes(id)))];
   return s;
 }
 
@@ -49,5 +47,4 @@ export function resetState() {
   store(KEY, state);
 }
 
-export const placedCount = () => Object.values(state.placed).reduce((n, ids) => n + ids.length, 0);
-export const isPlaced = (id) => (state.placed[ITEM_BY_ID[id]?.zone] || []).includes(id);
+export const placedCount = () => state.placed.length;
