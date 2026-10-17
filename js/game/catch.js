@@ -28,8 +28,14 @@ export class CatchGame {
     this.avatar = null;
     this.px = null;
     this.target = null;
+    this.tiltOn = false;
+    this.tiltRaw = null;
+    this.tiltBase = null;
 
-    const move = (e) => { this.target = e.clientX - this.canvas.getBoundingClientRect().left; };
+    const move = (e) => {
+      if (this.tiltOn) return; // במצב הטיה האצבע לא שולטת
+      this.target = e.clientX - this.canvas.getBoundingClientRect().left;
+    };
     canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture?.(e.pointerId); move(e); });
     canvas.addEventListener('pointermove', move);
 
@@ -44,6 +50,17 @@ export class CatchGame {
   }
 
   setAvatar(img) { this.avatar = img; }
+
+  // שליטה בהטיה: gamma = הטיה ימינה/שמאלה במעלות. נקודת האפס = האופן שבו הילד מחזיק את הטלפון בתחילת המשחק.
+  setTiltEnabled(on) {
+    this.tiltOn = on;
+    this.tiltBase = this.tiltRaw;
+  }
+
+  onTilt(gamma) {
+    this.tiltRaw = this.tiltRaw == null ? gamma : this.tiltRaw * 0.8 + gamma * 0.2;
+    if (this.tiltBase == null) this.tiltBase = this.tiltRaw;
+  }
 
   key(e, down) {
     if (!this.running) return;
@@ -84,6 +101,7 @@ export class CatchGame {
     this.rainAt = CONFIG.rain.windows.map(([a, b]) => rand(a, b));
     this.px = this.W / 2;
     this.target = this.W / 2;
+    this.tiltBase = this.tiltRaw;
     this.running = true;
     this.paused = false;
     this.last = performance.now();
@@ -123,12 +141,15 @@ export class CatchGame {
     this.t += dt;
     const progress = Math.min(1, this.t / CONFIG.durationSec);
 
-    // תנועת הסל: מקלדת או גרירה
-    if (this.keys.left || this.keys.right) {
+    // תנועת הסל: הטיה, או מקלדת/גרירה
+    if (this.tiltOn && this.tiltRaw != null && this.tiltBase != null) {
+      const d = Math.max(-1, Math.min(1, (this.tiltRaw - this.tiltBase) / CONFIG.tilt.maxDeg));
+      this.target = this.W / 2 + d * (this.W / 2 - this.bw / 2);
+    } else if (this.keys.left || this.keys.right) {
       this.target = (this.target ?? this.px) + (this.keys.right ? 1 : 0) * 560 * dt - (this.keys.left ? 1 : 0) * 560 * dt;
     }
     this.target = Math.min(Math.max(this.target ?? this.px, this.bw / 2), this.W - this.bw / 2);
-    this.px += (this.target - this.px) * Math.min(1, dt * 18);
+    this.px += (this.target - this.px) * Math.min(1, dt * (this.tiltOn ? 12 : 18));
 
     // גשם של רעיונות
     for (let i = 0; i < this.rainAt.length; i++) {

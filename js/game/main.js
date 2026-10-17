@@ -8,6 +8,7 @@ import { ACHIEVEMENTS, checkAchievements } from './achievements.js';
 import { avatarHTML, loadAvatarImage } from './avatar.js';
 import { confetti } from '../confetti.js';
 import { play, isMuted, setMuted } from '../sound.js';
+import { load, store } from '../storage.js';
 import { ICONS } from '../icons.js';
 
 const $ = (id) => document.getElementById(id);
@@ -56,6 +57,79 @@ function renderHome() {
 /* ---------- משחק ---------- */
 let game;
 
+/* ---------- שליטה בהטיה (אופציונלית) ---------- */
+const TILT_KEY = 'agam-tilt';
+const tiltSupported = 'DeviceOrientationEvent' in window && matchMedia('(pointer: coarse)').matches;
+const needsPermission = typeof DeviceOrientationEvent !== 'undefined' &&
+  typeof DeviceOrientationEvent.requestPermission === 'function';
+let tiltOn = false;
+let tiltGranted = !needsPermission;
+let gotTilt = false;
+
+function onOrient(e) {
+  if (e.gamma == null) return;
+  gotTilt = true;
+  game.onTilt(screen.orientation?.angle === 180 ? -e.gamma : e.gamma);
+}
+
+function syncTiltButton() {
+  const b = $('tilt-toggle');
+  b.hidden = !tiltSupported;
+  b.setAttribute('aria-pressed', String(tiltOn));
+  b.innerHTML = ICONS.phone;
+}
+
+function applyTilt(on) {
+  tiltOn = on;
+  store(TILT_KEY, on);
+  game.setTiltEnabled(on);
+  window.removeEventListener('deviceorientation', onOrient);
+  if (on) window.addEventListener('deviceorientation', onOrient);
+  syncTiltButton();
+  $('play-hint').textContent = on
+    ? 'החזיקו את הטלפון ישר, והטו אותו ימינה ושמאלה כדי לתפוס'
+    : 'גררו את האצבע ימינה ושמאלה כדי לתפוס';
+}
+
+async function askTiltPermission() {
+  try {
+    tiltGranted = (await DeviceOrientationEvent.requestPermission()) === 'granted';
+  } catch {
+    tiltGranted = false;
+  }
+  return tiltGranted;
+}
+
+// באייפון חייבים לבקש הרשאה מתוך לחיצה של המשתמש (בכל טעינה מחדש של הדף)
+async function ensureTiltPermission() {
+  if (!tiltOn || tiltGranted) return;
+  if (!(await askTiltPermission())) {
+    applyTilt(false);
+    toast('לא אושרה הטיה – ממשיכים בגרירה');
+  }
+}
+
+async function toggleTilt() {
+  play('tap');
+  if (tiltOn) return applyTilt(false);
+  if (needsPermission && !tiltGranted && !(await askTiltPermission())) {
+    return toast('לא אושרה הטיה – ממשיכים בגרירה');
+  }
+  applyTilt(true);
+  toast('שליטה בהטיה פועלת');
+}
+
+// אם אין חיישן (או שהוא לא מגיב) חוזרים לגרירה
+function checkTiltAlive() {
+  if (!tiltOn) return;
+  setTimeout(() => {
+    if (tiltOn && !gotTilt && document.body.classList.contains('is-play')) {
+      applyTilt(false);
+      toast('אין חיישן הטיה – גוררים עם האצבע');
+    }
+  }, 1600);
+}
+
 function setHud({ score, time, ideas }) {
   $('hud-score').textContent = score;
   $('hud-time').textContent = time;
@@ -86,7 +160,8 @@ function banner(text) {
   bannerTimer = setTimeout(() => b.classList.remove('on'), 1800);
 }
 
-function startPlay() {
+async function startPlay() {
+  await ensureTiltPermission();
   show('play');
   setHud({ score: 0, time: CONFIG.durationSec, ideas: 0 });
   game.resize();
@@ -105,6 +180,7 @@ function startPlay() {
         overlay.classList.remove('on');
         $('play-hint').classList.remove('on');
         game.start();
+        checkTiltAlive();
       }, 500);
     }
   };
@@ -364,8 +440,11 @@ function setupSettings() {
 async function init() {
   game = new CatchGame($('game-canvas'), { hud: setHud, banner, end: onGameEnd });
   loadAvatarImage().then((img) => game.setAvatar(img));
+  // העדפת ההטיה נשמרת; הרשאה (באייפון) תתבקש בלחיצה הבאה על "שחקו"
+  applyTilt(tiltSupported && load(TILT_KEY, false));
 
   $('go-play').addEventListener('click', () => { play('tap'); startPlay(); });
+  $('tilt-toggle').addEventListener('click', toggleTilt);
   $('go-class').addEventListener('click', () => { play('tap'); show('class'); });
   $('place-all').addEventListener('click', placeAll);
   $('clear-class').addEventListener('click', clearClass);

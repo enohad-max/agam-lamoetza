@@ -14,6 +14,9 @@ export const CONFIG = {
 
   campaignUrl: 'index.html',
 
+  // שליטה בהטיה (אופציונלית): maxDeg = כמה מעלות הטיה נותנות תנועה מלאה לצד
+  tilt: { maxDeg: 22 },
+
   durationSec: 50,
   countdownSec: 3,
 
