@@ -3,6 +3,7 @@ import { ITEMS, RARITIES } from './items.js';
 import { SCENE_SVG, SCENE_HEIGHT } from './scene.js';
 import { getState, update, resetState, placedCount } from './state.js';
 import { CatchGame } from './catch.js';
+import { RunGame } from './run.js';
 import { rollReward, unlockWithStars } from './rewards.js';
 import { ACHIEVEMENTS, checkAchievements } from './achievements.js';
 import { avatarHTML, loadAvatarImage } from './avatar.js';
@@ -47,7 +48,7 @@ function show(name) {
 /* ---------- מסך ראשי ---------- */
 function renderHome() {
   $('home-avatar').innerHTML = avatarHTML();
-  $('home-title').textContent = CONFIG.gameName;
+  $('home-title').textContent = CONFIG.hubName;
   $('home-slogan').textContent = CONFIG.fullSlogan;
   $('home-tagline').textContent = CONFIG.tagline;
   $('home-value').textContent = pickOne(CONFIG.values);
@@ -55,7 +56,10 @@ function renderHome() {
 }
 
 /* ---------- משחק ---------- */
-let game;
+let catchGame;
+let runGame;
+let game; // המשחק שפועל כרגע
+let lastKind = 'catch';
 
 /* ---------- שליטה בהטיה (אופציונלית) ---------- */
 const TILT_KEY = 'agam-tilt';
@@ -69,7 +73,7 @@ let gotTilt = false;
 function onOrient(e) {
   if (e.gamma == null) return;
   gotTilt = true;
-  game.onTilt(screen.orientation?.angle === 180 ? -e.gamma : e.gamma);
+  catchGame.onTilt(screen.orientation?.angle === 180 ? -e.gamma : e.gamma);
 }
 
 function syncTiltButton() {
@@ -82,13 +86,19 @@ function syncTiltButton() {
 function applyTilt(on) {
   tiltOn = on;
   store(TILT_KEY, on);
-  game.setTiltEnabled(on);
+  catchGame.setTiltEnabled(on);
   window.removeEventListener('deviceorientation', onOrient);
   if (on) window.addEventListener('deviceorientation', onOrient);
   syncTiltButton();
-  $('play-hint').textContent = on
-    ? 'החזיקו את הטלפון ישר, והטו אותו ימינה ושמאלה כדי לתפוס'
-    : 'גררו את האצבע ימינה ושמאלה כדי לתפוס';
+  setHint(lastKind);
+}
+
+function setHint(kind) {
+  $('play-hint').textContent = kind === 'run'
+    ? 'לחיצה קצרה = קפיצה נמוכה, לחיצה ארוכה = קפיצה גבוהה. אספו רעיונות ואל תיגעו בפצצות!'
+    : tiltOn
+      ? 'החזיקו את הטלפון ישר, והטו אותו ימינה ושמאלה כדי לתפוס'
+      : 'גררו את האצבע ימינה ושמאלה כדי לתפוס';
 }
 
 async function askTiltPermission() {
@@ -160,9 +170,13 @@ function banner(text) {
   bannerTimer = setTimeout(() => b.classList.remove('on'), 1800);
 }
 
-async function startPlay() {
-  await ensureTiltPermission();
+async function startPlay(kind = lastKind) {
+  lastKind = kind;
+  game = kind === 'run' ? runGame : catchGame;
+  if (kind === 'catch') await ensureTiltPermission();
   show('play');
+  $('tilt-toggle').hidden = kind === 'run' || !tiltSupported;
+  setHint(kind);
   setHud({ score: 0, time: CONFIG.durationSec, ideas: 0 });
   game.resize();
   const overlay = $('countdown');
@@ -180,7 +194,7 @@ async function startPlay() {
         overlay.classList.remove('on');
         $('play-hint').classList.remove('on');
         game.start();
-        checkTiltAlive();
+        if (kind === 'catch') checkTiltAlive();
       }, 500);
     }
   };
@@ -438,19 +452,23 @@ function setupSettings() {
 
 /* ---------- אתחול ---------- */
 async function init() {
-  game = new CatchGame($('game-canvas'), { hud: setHud, banner, end: onGameEnd });
-  loadAvatarImage().then((img) => game.setAvatar(img));
+  const ui = { hud: setHud, banner, end: onGameEnd };
+  catchGame = new CatchGame($('game-canvas'), ui);
+  runGame = new RunGame($('game-canvas'), ui);
+  game = catchGame;
+  loadAvatarImage().then((img) => { catchGame.setAvatar(img); runGame.setAvatar(img); });
   // העדפת ההטיה נשמרת; הרשאה (באייפון) תתבקש בלחיצה הבאה על "שחקו"
   applyTilt(tiltSupported && load(TILT_KEY, false));
 
-  $('go-play').addEventListener('click', () => { play('tap'); startPlay(); });
+  $('go-play').addEventListener('click', () => { play('tap'); startPlay('catch'); });
+  $('go-run').addEventListener('click', () => { play('tap'); startPlay('run'); });
   $('tilt-toggle').addEventListener('click', toggleTilt);
   $('go-class').addEventListener('click', () => { play('tap'); show('class'); });
   $('place-all').addEventListener('click', placeAll);
   $('clear-class').addEventListener('click', clearClass);
   $('go-collection').addEventListener('click', () => { play('tap'); show('collection'); });
   $('exit-play').addEventListener('click', exitPlay);
-  $('res-again').addEventListener('click', startPlay);
+  $('res-again').addEventListener('click', () => startPlay());
   $('res-class').addEventListener('click', () => show('class'));
   $('res-collection').addEventListener('click', () => show('collection'));
   document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => show(b.dataset.go)));

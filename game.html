@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#0d9488">
-  <title>גשם של רעיונות לאגם</title>
+  <title>המשחקים של אגם</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -26,7 +26,11 @@
       <p id="home-slogan" class="g-slogan"></p>
     </header>
     <main class="g-main">
-      <button id="go-play" class="g-btn g-btn-play" type="button"><span class="g-btn-emoji">🎮</span> שחקו עכשיו</button>
+      <p class="g-pick">בחרו משחק:</p>
+      <div class="g-row">
+        <button id="go-play" class="g-btn g-btn-play g-game" type="button"><span class="g-btn-emoji">🌧️</span> גשם של רעיונות<small>תופסים בסל</small></button>
+        <button id="go-run" class="g-btn g-btn-run g-game" type="button"><span class="g-btn-emoji">🏃</span> אגם רצה<small>קופצים מעל מכשולים</small></button>
+      </div>
       <div class="g-row">
         <button id="go-class" class="g-btn g-btn-blue" type="button"><span class="g-btn-emoji">🏫</span> הכיתה שלי</button>
         <button id="go-collection" class="g-btn g-btn-purple" type="button"><span class="g-btn-emoji">🧺</span> האוסף שלי<small id="home-progress"></small></button>

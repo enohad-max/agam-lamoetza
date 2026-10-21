@@ -4,6 +4,7 @@ export const CONFIG = {
   title: 'אגם במועצה',
   slogan: 'כל הכיתה מרוצה!',
   fullSlogan: 'אגם במועצה – כל הכיתה מרוצה!',
+  hubName: 'המשחקים של אגם',
   gameName: 'גשם של רעיונות לאגם',
   tagline: 'עזרו לאגם לאסוף רעיונות ולבנות את הכיתה הכי כיפית שיש!',
   closing: 'כל רעיון יכול לעשות שינוי.',
@@ -23,6 +24,9 @@ export const CONFIG = {
 
   // "גשם של רעיונות": חלונות זמן (בשניות מתחילת המשחק) שבהם מתחיל האירוע
   rain: { durationSec: 5, windows: [[10, 20], [30, 40]], pool: ['note', 'note', 'star', 'pencil', 'smile'] },
+
+  // משחק הריצה: מהירות הגלילה (ביחידות u לשנייה) עולה בהדרגה
+  run: { start: 250, end: 350 },
 
   spawn: { startEvery: 0.85, endEvery: 0.5, rainEvery: 0.11 },
   speed: { start: 150, end: 235 }, // פיקסלים בשנייה, עולה בהדרגה

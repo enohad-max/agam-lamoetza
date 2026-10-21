@@ -45,6 +45,11 @@ body.game [hidden] { display: none !important; }
 .g-btn-emoji { font-size: 1.7rem; line-height: 1.1; }
 .g-btn-play { min-height: 80px; font-size: 1.6rem; background: linear-gradient(180deg, #fde047, #facc15); color: #422006; box-shadow: 0 6px 0 #ca8a04; }
 .g-btn-play:active { box-shadow: 0 2px 0 #ca8a04; }
+.g-btn-run { background: linear-gradient(180deg, #fb923c, #f97316); box-shadow: 0 5px 0 #c2410c; }
+.g-btn-run:active { box-shadow: 0 1px 0 #c2410c; }
+.g-pick { margin: 0; text-align: center; font-weight: 800; color: var(--g-blue-dark); }
+.g-game { flex-direction: column; min-height: 104px; font-size: 1.15rem; line-height: 1.15; text-align: center; }
+.g-game.g-btn-play { box-shadow: 0 5px 0 #ca8a04; }
 .g-btn-blue { background: linear-gradient(180deg, #3b82f6, var(--g-blue)); box-shadow: 0 5px 0 var(--g-blue-dark); }
 .g-btn-purple { background: linear-gradient(180deg, #a78bfa, var(--g-lav)); box-shadow: 0 5px 0 #6d28d9; }
 .g-btn-danger { background: linear-gradient(180deg, #f87171, #ef4444); box-shadow: 0 5px 0 #b91c1c; }
