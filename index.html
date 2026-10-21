@@ -117,27 +117,26 @@
       <a class="back-btn" href="#home" aria-label="חזרה"></a>
       <h2>קופסת ההצעות</h2>
     </div>
-    <div class="screen-body">
-      <div class="card" id="idea-box">
-        <p class="hint">מה אגם תעשה בשבילך אם תיבחר?</p>
+    <div class="ideas-body">
+      <div class="idea-hero">
+        <i class="note n1"></i><i class="note n2"></i><i class="note n3"></i><i class="note n4"></i><i class="note n5"></i><i class="note n6"></i>
+        <div id="idea-pic" class="idea-pic">
+          <i class="glow"></i>
+          <img src="img/agam-ideas.webp" alt="אגם מחזיקה קופסת רעיונות" width="900" height="673">
+          <span class="sp s1">✨</span><span class="sp s2">⭐</span><span class="sp s3">✨</span><span class="sp s4">💡</span><span class="sp s5">⭐</span>
+        </div>
+      </div>
 
-        <label class="label" for="idea-text">ההצעה שלך</label>
-        <textarea id="idea-text" class="field" rows="3" maxlength="100" placeholder="כתבו כאן הצעה קצרה…"></textarea>
-
-        <label class="label" for="idea-name">השם שלך (לא חובה)</label>
-        <input id="idea-name" class="field" type="text" maxlength="20" autocomplete="off" placeholder="למשל: נועה">
-
+      <div class="card idea-form" id="idea-box">
+        <label class="sr-only" for="idea-text">ההצעה שלך</label>
+        <textarea id="idea-text" class="field" rows="2" maxlength="100" placeholder="מה אגם תעשה בשבילך אם תיבחר? כתבו רעיון קצר…"></textarea>
+        <label class="sr-only" for="idea-name">השם שלך (לא חובה)</label>
+        <input id="idea-name" class="field" type="text" maxlength="20" autocomplete="off" placeholder="השם שלך (לא חובה)">
         <button id="drop" class="btn btn-block" type="button">שימו בקופסה!</button>
       </div>
 
-      <div class="card" id="saved-card" hidden>
-        <div class="sec-head">
-          <span class="tile t-green" data-icon="check"></span>
-          <div>
-            <h2>ההצעות שבקופסה</h2>
-            <p class="hint">לחצו על חץ השליחה כדי לשלוח לאגם בוואטסאפ</p>
-          </div>
-        </div>
+      <div class="card idea-saved" id="saved-card" hidden>
+        <p class="saved-title">ההצעות שבקופסה <small>(חץ = שליחה לאגם בוואטסאפ)</small></p>
         <ul id="saved" class="saved"></ul>
       </div>
     </div>

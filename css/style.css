@@ -646,3 +646,129 @@ html:has(body.app) { overscroll-behavior: none; }
 .cat-body h3 { margin: 12px 0 0; font-size: 1.02rem; font-weight: 800; color: var(--purple-dark); }
 .cat-body p { margin: 3px 0 0; font-size: .96rem; line-height: 1.5; color: var(--ink); }
 .cat-body .cat-note { margin-top: 12px; padding-top: 10px; border-top: 1.5px dashed var(--line); color: var(--muted); font-weight: 500; }
+
+/* ---------- קופסת ההצעות: אגם עם הקופסה, ממלא את המסך ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+#screen-ideas { position: fixed; inset: 0; min-height: 0; overflow: hidden; }
+.ideas-body {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4dvh;
+  padding: 1dvh 16px calc(env(safe-area-inset-bottom) + 1.4dvh);
+  overflow-y: auto;
+}
+
+.idea-hero {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 120px;
+  container-type: size;
+  display: grid;
+  place-items: end center;
+  overflow: hidden;
+  border-radius: 26px;
+  background: radial-gradient(70% 80% at 62% 62%, #fff3a3 0%, #fde68a 38%, rgba(253, 230, 138, 0) 72%), linear-gradient(180deg, #f3e8ff, #fde7f3);
+}
+/* פתקי רעיונות צבעוניים שמרחפים ברקע */
+.idea-hero .note {
+  position: absolute;
+  width: 5.5cqw; height: 6.6cqw;
+  border-radius: 3px;
+  opacity: .85;
+  animation: float-note 7s ease-in-out infinite;
+}
+.note.n1 { left: 6%; top: 14%; background: #fde047; --r: -14deg; }
+.note.n2 { left: 18%; top: 62%; background: #f9a8d4; --r: 10deg; animation-delay: -2s; }
+.note.n3 { left: 3%; top: 38%; background: #7dd3fc; --r: 18deg; animation-delay: -4s; }
+.note.n4 { right: 5%; top: 12%; background: #86efac; --r: -8deg; animation-delay: -1s; }
+.note.n5 { right: 14%; top: 8%; background: #c4b5fd; --r: 22deg; animation-delay: -3s; }
+.note.n6 { right: 3%; top: 55%; background: #fdba74; --r: -20deg; animation-delay: -5s; }
+@keyframes float-note { 50% { transform: translateY(-12px) rotate(var(--r)); } }
+
+.idea-pic {
+  position: relative;
+  height: min(100cqh, calc(100cqw * 673 / 900));
+  aspect-ratio: 900 / 673;
+  container-type: size;
+  transform-origin: 70% 100%;
+  animation: pic-in .9s cubic-bezier(.2, 1.3, .4, 1) both;
+}
+@keyframes pic-in { from { opacity: 0; transform: translateY(40px) scale(.9); } }
+.idea-pic > img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  filter: drop-shadow(0 10px 14px rgba(76, 29, 149, .3));
+  animation: pic-float 4.2s ease-in-out 1s infinite;
+}
+@keyframes pic-float { 50% { transform: translateY(-1.6cqh) rotate(.4deg); } }
+.idea-pic.bump { animation: bump .6s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes bump { 35% { transform: scale(1.06) rotate(-1.2deg); } 70% { transform: scale(.985); } }
+
+/* זוהר של הנורה על הקופסה */
+.idea-pic .glow {
+  position: absolute;
+  left: 82%; top: 73%;
+  width: 24cqw; height: 24cqw;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(253, 224, 71, .95), rgba(253, 224, 71, 0) 68%);
+  animation: glow 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glow { 0%, 100% { opacity: .15; transform: translate(-50%, -50%) scale(.8); } 50% { opacity: .8; transform: translate(-50%, -50%) scale(1.15); } }
+
+/* נצנוצים סביב הקופסה */
+.idea-pic .sp { position: absolute; font-size: 7cqw; line-height: 1; transform: translate(-50%, -50%); animation: twinkle 2.2s ease-in-out infinite; pointer-events: none; }
+.sp.s1 { left: 59%; top: 47%; }
+.sp.s2 { left: 94%; top: 46%; animation-delay: -.7s; }
+.sp.s3 { left: 88%; top: 36%; animation-delay: -1.3s; }
+.sp.s4 { left: 53%; top: 80%; font-size: 6cqw; animation-delay: -.4s; }
+.sp.s5 { left: 90%; top: 88%; font-size: 6cqw; animation-delay: -1.7s; }
+@keyframes twinkle { 0%, 100% { opacity: .25; transform: translate(-50%, -50%) scale(.6) rotate(0); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(18deg); } }
+
+.idea-pic .burst { position: absolute; font-size: 7cqw; line-height: 1; pointer-events: none; z-index: 3; }
+
+.fly-note {
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 70;
+  max-width: 70vw;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #fef08a, #fde047);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: .95rem;
+  box-shadow: 0 6px 14px rgba(76, 29, 149, .35);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.idea-form { flex: none; display: grid; gap: 1dvh; padding: 12px 14px; }
+.idea-form .field { min-height: 48px; padding: 10px 14px; }
+.idea-form textarea.field { resize: none; }
+.idea-form .btn-block { margin: .4dvh 0 0; min-height: clamp(48px, 6.6dvh, 58px); }
+
+.idea-saved { flex: none; max-height: 22dvh; overflow-y: auto; padding: 10px 12px; }
+.saved-title { margin: 0 0 8px; font-weight: 800; }
+.saved-title small { font-weight: 500; color: var(--muted); font-size: .8rem; }
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .ideas-body { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr auto; align-items: stretch; column-gap: 16px; }
+  .idea-hero { grid-row: 1 / -1; grid-column: 1; }
+  .idea-form { grid-column: 2; align-self: center; }
+  .idea-saved { grid-column: 2; max-height: 30dvh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idea-hero .note, .idea-pic, .idea-pic > img, .idea-pic .glow, .idea-pic .sp { animation: none; }
+  .idea-pic .glow { opacity: .5; }
+}

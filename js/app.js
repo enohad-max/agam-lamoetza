@@ -112,6 +112,64 @@ function renderItems() {
   });
 }
 
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// נקודת הפתח של הקופסה בתוך התמונה (באחוזים מהתמונה)
+const BOX_MOUTH = { x: 0.73, y: 0.56 };
+
+// פתק קטן עף מהשדה אל הקופסה שאגם מחזיקה, ואז התפרצות של כוכבים ורעיונות
+function flyNote(text, done) {
+  const pic = $('idea-pic');
+  if (reduceMotion() || !pic.clientWidth) return done();
+  const from = $('idea-text').getBoundingClientRect();
+  const to = pic.getBoundingClientRect();
+  const tx = to.left + to.width * BOX_MOUTH.x;
+  const ty = to.top + to.height * BOX_MOUTH.y;
+  const note = document.createElement('div');
+  note.className = 'fly-note';
+  note.textContent = text.length > 22 ? `${text.slice(0, 22)}…` : text;
+  document.body.append(note);
+  const sx = from.left + from.width / 2;
+  const sy = from.top + from.height / 2;
+  const w = note.offsetWidth;
+  const h = note.offsetHeight;
+  const place = (x, y, rot, scale, op) =>
+    ({ transform: `translate(${x - w / 2}px, ${y - h / 2}px) rotate(${rot}deg) scale(${scale})`, opacity: op });
+  const anim = note.animate([
+    place(sx, sy, -4, 1, 1),
+    place((sx + tx) / 2 + 30, Math.min(sy, ty) - 70, 14, 0.85, 1),
+    place(tx, ty, 38, 0.25, 0.9),
+  ], { duration: 820, easing: 'cubic-bezier(.4, 0, .6, 1)', fill: 'forwards' });
+  anim.onfinish = () => {
+    note.remove();
+    burst(pic, BOX_MOUTH);
+    done();
+  };
+}
+
+function burst(pic, at) {
+  const pieces = ['⭐', '💡', '✨', '💜', '🌟', '✏️', '✨', '⭐'];
+  pic.classList.remove('bump');
+  void pic.offsetWidth;
+  pic.classList.add('bump');
+  const size = pic.clientWidth;
+  pieces.forEach((emoji, i) => {
+    const el = document.createElement('span');
+    el.className = 'burst';
+    el.textContent = emoji;
+    el.style.left = `${at.x * 100}%`;
+    el.style.top = `${at.y * 100}%`;
+    pic.append(el);
+    const ang = (-Math.PI * (0.15 + 0.7 * (i / (pieces.length - 1)))) + (Math.random() - 0.5) * 0.3;
+    const dist = size * (0.22 + Math.random() * 0.2);
+    el.animate([
+      { transform: 'translate(-50%, -50%) scale(.3)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist}px), calc(-50% + ${Math.sin(ang) * dist}px)) scale(1.1) rotate(${(Math.random() - 0.5) * 120}deg)`, opacity: 1, offset: 0.55 },
+      { transform: `translate(calc(-50% + ${Math.cos(ang) * dist * 1.2}px), calc(-50% + ${Math.sin(ang) * dist * 1.2 + 30}px)) scale(.6)`, opacity: 0 },
+    ], { duration: 1100, easing: 'ease-out', fill: 'forwards' }).onfinish = () => el.remove();
+  });
+}
+
 function dropInBox() {
   const text = $('idea-text').value.trim();
   if (text.length < 3) {
@@ -130,11 +188,15 @@ function dropInBox() {
   void btn.offsetWidth;
   btn.classList.add('pop');
 
-  confetti();
-  play('win');
+  play('tap');
+  // הרשימה מתעדכנת רק אחרי הנחיתה, כדי שהתמונה לא תשנה גודל באמצע הטיסה
+  flyNote(text, () => {
+    renderItems();
+    confetti();
+    play('win');
+    toast('ההצעה בקופסה! עכשיו שלחו אותה לאגם');
+  });
   $('idea-text').value = '';
-  renderItems();
-  toast('ההצעה בקופסה! עכשיו שלחו אותה לאגם');
 }
 
 function setupInstallHint() {
