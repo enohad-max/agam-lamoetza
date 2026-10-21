@@ -18,6 +18,7 @@
 <body>
   <canvas id="confetti" aria-hidden="true"></canvas>
 
+  <div id="screen-home" class="screen home">
   <header class="hero">
     <button id="mute" class="icon-btn" type="button" aria-label="צלילים" aria-pressed="false"></button>
     <svg class="logo" viewBox="0 0 96 96" role="img" aria-label="קלפי הצבעה">
@@ -35,7 +36,8 @@
     <p class="class-name">ד3 יסמין</p>
   </header>
 
-  <main>
+
+  <main class="home-main">
     <section class="card countdown" aria-live="polite">
       <div id="count-num" class="count-num">…</div>
       <div class="count-text">
@@ -44,80 +46,85 @@
       </div>
     </section>
 
-    <section class="card">
-      <div class="sec-head">
+    <nav class="menu" aria-label="תפריט">
+      <a class="menu-btn m-green" href="game.html">
         <span class="tile t-green" data-icon="dice"></span>
-        <div>
-          <h2>משחק: גשם של רעיונות לאגם</h2>
-          <p class="hint">תופסים רעיונות, אוספים פריטים ובונים את הכיתה המושלמת</p>
-        </div>
-      </div>
-      <a class="btn btn-block" href="game.html">שחקו עכשיו</a>
-    </section>
-
-    <section class="card" id="platform">
-      <div class="sec-head">
+        <span class="menu-title">משחק</span>
+        <span class="menu-sub">גשם של רעיונות</span>
+      </a>
+      <a class="menu-btn m-yellow" href="#platform">
         <span class="tile t-yellow" data-icon="flag"></span>
-        <div>
-          <h2>התוכנית של אגם</h2>
-          <p class="hint">יותר כיף, יותר רעיונות, יותר ביחד</p>
-        </div>
-      </div>
-      <ul id="promises" class="promises"></ul>
-    </section>
-
-    <section class="card">
-      <div class="sec-head">
+        <span class="menu-title">התוכנית</span>
+        <span class="menu-sub">מה אגם מבטיחה</span>
+      </a>
+      <a class="menu-btn m-purple" href="#quiz">
         <span class="tile t-purple" data-icon="target"></span>
-        <div>
-          <h2>כמה מכירים את אגם?</h2>
-          <p class="hint">5 שאלות קצרות, ובסוף מקבלים תעודה</p>
-        </div>
-      </div>
-      <div id="quiz"></div>
-    </section>
-
-    <section class="card" id="idea-box">
-      <div class="sec-head">
+        <span class="menu-title">חידון</span>
+        <span class="menu-sub">כמה מכירים את אגם?</span>
+      </a>
+      <a class="menu-btn m-pink" href="#ideas">
         <span class="tile t-pink" data-icon="mail"></span>
-        <div>
-          <h2>קופסת ההצעות</h2>
-          <p class="hint">מה אגם תעשה בשבילך אם תיבחר?</p>
-        </div>
-      </div>
+        <span class="menu-title">הצעות</span>
+        <span class="menu-sub">קופסת ההצעות</span>
+      </a>
+    </nav>
 
-      <label class="label" for="idea-text">ההצעה שלך</label>
-      <textarea id="idea-text" class="field" rows="3" maxlength="100" placeholder="כתבו כאן הצעה קצרה…"></textarea>
-
-      <label class="label" for="idea-name">השם שלך (לא חובה)</label>
-      <input id="idea-name" class="field" type="text" maxlength="20" autocomplete="off" placeholder="למשל: נועה">
-
-      <button id="drop" class="btn btn-block" type="button">שימו בקופסה!</button>
-    </section>
-
-    <section class="card" id="saved-card" hidden>
-      <div class="sec-head">
-        <span class="tile t-green" data-icon="check"></span>
-        <div>
-          <h2>ההצעות שבקופסה</h2>
-          <p class="hint">לחצו על חץ השליחה כדי לשלוח לאגם בוואטסאפ</p>
-        </div>
-      </div>
-      <ul id="saved" class="saved"></ul>
-    </section>
-
-    <section class="card" id="install-card">
-      <div class="sec-head">
-        <span class="tile t-yellow" data-icon="phone"></span>
-        <div>
-          <h2>שימו אותי במסך הבית</h2>
-          <p id="install-text" class="hint"></p>
-        </div>
-      </div>
-    </section>
+    <p id="install-text" class="install-hint"></p>
   </main>
+  </div>
 
-  <footer>אגם למועצה – כל הכיתה מרוצה</footer>
+  <section id="screen-platform" class="screen" hidden>
+    <div class="app-bar">
+      <a class="back-btn" href="#home" aria-label="חזרה"></a>
+      <h2>התוכנית של אגם</h2>
+    </div>
+    <div class="screen-body">
+      <p class="hint center">יותר כיף, יותר רעיונות, יותר ביחד</p>
+      <ul id="promises" class="promises"></ul>
+    </div>
+  </section>
+
+  <section id="screen-quiz" class="screen" hidden>
+    <div class="app-bar">
+      <a class="back-btn" href="#home" aria-label="חזרה"></a>
+      <h2>כמה מכירים את אגם?</h2>
+    </div>
+    <div class="screen-body">
+      <div class="card"><div id="quiz"></div></div>
+    </div>
+  </section>
+
+  <section id="screen-ideas" class="screen" hidden>
+    <div class="app-bar">
+      <a class="back-btn" href="#home" aria-label="חזרה"></a>
+      <h2>קופסת ההצעות</h2>
+    </div>
+    <div class="screen-body">
+      <div class="card" id="idea-box">
+        <p class="hint">מה אגם תעשה בשבילך אם תיבחר?</p>
+
+        <label class="label" for="idea-text">ההצעה שלך</label>
+        <textarea id="idea-text" class="field" rows="3" maxlength="100" placeholder="כתבו כאן הצעה קצרה…"></textarea>
+
+        <label class="label" for="idea-name">השם שלך (לא חובה)</label>
+        <input id="idea-name" class="field" type="text" maxlength="20" autocomplete="off" placeholder="למשל: נועה">
+
+        <button id="drop" class="btn btn-block" type="button">שימו בקופסה!</button>
+      </div>
+
+      <div class="card" id="saved-card" hidden>
+        <div class="sec-head">
+          <span class="tile t-green" data-icon="check"></span>
+          <div>
+            <h2>ההצעות שבקופסה</h2>
+            <p class="hint">לחצו על חץ השליחה כדי לשלוח לאגם בוואטסאפ</p>
+          </div>
+        </div>
+        <ul id="saved" class="saved"></ul>
+      </div>
+    </div>
+  </section>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script type="module" src="js/app.js"></script>

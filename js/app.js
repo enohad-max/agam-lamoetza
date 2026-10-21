@@ -51,8 +51,7 @@ function renderPlatform() {
       b.textContent = p.cta.label;
       b.addEventListener('click', () => {
         play('tap');
-        $(p.cta.target).scrollIntoView({ behavior: 'smooth', block: 'start' });
-        $('idea-text').focus({ preventScroll: true });
+        location.hash = '#ideas';
       });
       body.append(b);
     }
@@ -125,7 +124,7 @@ function dropInBox() {
 function setupInstallHint() {
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
   if (standalone) {
-    $('install-card').hidden = true;
+    $('install-text').hidden = true;
     return;
   }
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -134,7 +133,19 @@ function setupInstallHint() {
     : 'באנדרואיד: לחצו על ⋮ בכרום ואז "הוספה למסך הבית".';
 }
 
+const SCREENS = ['home', 'platform', 'quiz', 'ideas'];
+
+// ניווט לפי hash: כפתור "אחורה" של הטלפון חוזר לתפריט
+function route() {
+  const name = location.hash.slice(1);
+  const current = SCREENS.includes(name) ? name : 'home';
+  for (const s of SCREENS) $(`screen-${s}`).hidden = s !== current;
+  window.scrollTo(0, 0);
+}
+
 function init() {
+  window.addEventListener('hashchange', () => { route(); play('tap'); });
+  route();
   document.querySelectorAll('[data-icon]').forEach((n) => { n.innerHTML = ICONS[n.dataset.icon]; });
   const countdown = () => renderCountdown($('count-num'), $('count-big'), $('count-small'));
   countdown();
