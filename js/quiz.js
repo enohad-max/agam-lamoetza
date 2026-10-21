@@ -121,7 +121,7 @@ export function initQuiz(root) {
   function summary() {
     const who = name || 'חבר/ה מד3';
     const lines = answers.map((a) => `• ${a.label}: ${a.text}`);
-    return `📋 תשובות מהשאלון מ${who}\nענה/תה נכון על ${score} מתוך ${KNOWLEDGE} שאלות על אגם 🎯\n${lines.join('\n')}`;
+    return `תשובות מהשאלון מ${who}\nענה/תה נכון על ${score} מתוך ${KNOWLEDGE} שאלות על אגם\n${lines.join('\n')}`;
   }
 
   function renderResult() {

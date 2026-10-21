@@ -21,7 +21,7 @@ function toast(msg) {
 
 function messageOf(item) {
   const who = item.name ? item.name : 'חבר/ה מד3';
-  return `📮 הצעה למועצה מ${who}:\n${item.text}`;
+  return `הצעה למועצה מ${who}:\n${item.text}`;
 }
 
 function openWhatsApp(item) {
@@ -99,7 +99,7 @@ function sendAll() {
   const pending = items.filter((it) => !it.sent);
   const list = pending.length ? pending : items;
   const who = list.find((it) => it.name)?.name || load('my-name', '') || 'חבר/ה מד3';
-  const head = `📮 הצעות למועצה מ${who}:`;
+  const head = `הצעות למועצה מ${who}:`;
   let text = head;
   const sentNow = [];
   for (const it of list) {
