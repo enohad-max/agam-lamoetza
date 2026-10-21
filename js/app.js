@@ -115,7 +115,7 @@ function renderItems() {
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // נקודת הפתח של הקופסה בתוך התמונה (באחוזים מהתמונה)
-const BOX_MOUTH = { x: 0.73, y: 0.56 };
+const BOX_MOUTH = { x: 0.70, y: 0.55 };
 
 // פתק קטן עף מהשדה אל הקופסה שאגם מחזיקה, ואז התפרצות של כוכבים ורעיונות
 function flyNote(text, done) {
