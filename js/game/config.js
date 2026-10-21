@@ -13,7 +13,7 @@ export const CONFIG = {
   avatarSrc: 'img/agam-badge.png',
   playerSrc: 'img/agam-cutout.png',
 
-  campaignUrl: 'index.html',
+  campaignUrl: 'index.html#home',
 
   // שליטה בהטיה (אופציונלית): maxDeg = כמה מעלות הטיה נותנות תנועה מלאה לצד
   tilt: { maxDeg: 22 },

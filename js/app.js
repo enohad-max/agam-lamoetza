@@ -133,18 +133,25 @@ function setupInstallHint() {
     : 'באנדרואיד: לחצו על ⋮ בכרום ואז "הוספה למסך הבית".';
 }
 
-const SCREENS = ['home', 'platform', 'quiz', 'ideas'];
+const SCREENS = ['intro', 'home', 'platform', 'quiz', 'ideas'];
 
 // ניווט לפי hash: כפתור "אחורה" של הטלפון חוזר לתפריט
 function route() {
   const name = location.hash.slice(1);
-  const current = SCREENS.includes(name) ? name : 'home';
+  const current = SCREENS.includes(name) ? name : 'intro';
   for (const s of SCREENS) $(`screen-${s}`).hidden = s !== current;
   window.scrollTo(0, 0);
 }
 
 function init() {
   window.addEventListener('hashchange', () => { route(); play('tap'); });
+  $('intro-go').addEventListener('click', (e) => {
+    e.preventDefault();
+    play('win');
+    confetti();
+    location.replace('#home'); // בלי להשאיר את הפתיחה בהיסטוריה
+    route();
+  });
   route();
   document.querySelectorAll('[data-icon]').forEach((n) => { n.innerHTML = ICONS[n.dataset.icon]; });
   const countdown = () => renderCountdown($('count-num'), $('count-big'), $('count-small'));
