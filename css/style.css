@@ -576,7 +576,7 @@ html:has(body.app) { overscroll-behavior: none; }
   box-shadow: 0 5px 0 rgba(46, 16, 101, .4), 0 12px 24px rgba(46, 16, 101, .3);
   transition: transform .08s, box-shadow .08s;
 }
-.intro-btn::after { content: "‹"; margin-inline-start: 10px; font-size: 1.5em; line-height: 1; animation: nudge 1.2s ease-in-out infinite; }
+.intro-btn::after { content: "\2190"; margin-inline-start: 10px; font-size: 1.6em; font-weight: 900; line-height: 1; animation: nudge 1.2s ease-in-out infinite; }
 @keyframes nudge { 50% { transform: translateX(-6px); } }
 .intro-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(46, 16, 101, .4); }
 
