@@ -372,3 +372,14 @@ function init() {
 }
 
 init();
+
+// יחידת גובה אחת לכל המסכים: גובה החלון הנראה בפועל (dvh בטלפון לפעמים מתעדכן באיחור אחרי מעבר בין עמודים)
+function syncViewportHeight() {
+  document.documentElement.style.setProperty('--vh', `${innerHeight / 100}px`);
+}
+syncViewportHeight();
+addEventListener('resize', syncViewportHeight);
+addEventListener('orientationchange', syncViewportHeight);
+addEventListener('pageshow', syncViewportHeight);
+window.visualViewport?.addEventListener('resize', syncViewportHeight);
+[100, 400, 1000].forEach((ms) => setTimeout(syncViewportHeight, ms));
