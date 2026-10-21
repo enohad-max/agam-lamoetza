@@ -92,12 +92,66 @@ function closePlatform() {
   syncPlatformHint();
 }
 
+let lastCount = 0;
+
+// שליחת כל הרעיונות בהודעה אחת ממוספרת (מוגבלת באורך, כדי שהקישור לוואטסאפ לא יהיה ארוך מדי)
+function sendAll() {
+  const pending = items.filter((it) => !it.sent);
+  const list = pending.length ? pending : items;
+  const who = list.find((it) => it.name)?.name || load('my-name', '') || 'חבר/ה מד3';
+  const head = `📮 הצעות למועצה מ${who}:`;
+  let text = head;
+  const sentNow = [];
+  for (const it of list) {
+    const next = `${text}\n${sentNow.length + 1}. ${it.text}`;
+    if (encodeURIComponent(next).length > 3500) break;
+    text = next;
+    sentNow.push(it);
+  }
+  if (!sentNow.length) return;
+  sendWhatsApp(text);
+  sentNow.forEach((it) => { it.sent = true; });
+  store('suggestions', items);
+  renderItems();
+  if (sentNow.length < list.length) toast(`נשלחו ${sentNow.length} רעיונות. לחצו שוב לשליחת השאר`);
+}
+
+function clearAll() {
+  if (!confirm('למחוק את כל הרעיונות מהקופסה?')) return;
+  items = [];
+  store('suggestions', items);
+  play('tap');
+  renderItems();
+}
+
+function openModal() {
+  play('tap');
+  $('ideas-modal').hidden = false;
+}
+
+function closeModal() {
+  $('ideas-modal').hidden = true;
+}
+
 function renderItems() {
   $('saved-card').hidden = items.length === 0;
+  const badge = $('idea-count');
+  badge.textContent = items.length;
+  if (items.length > lastCount) {
+    badge.classList.remove('bump');
+    void badge.offsetWidth;
+    badge.classList.add('bump');
+  }
+  lastCount = items.length;
+  if (items.length === 0) closeModal();
   const ul = $('saved');
   ul.replaceChildren();
   items.forEach((item, i) => {
     const li = document.createElement('li');
+    li.style.setProperty('--i', i);
+    const num = document.createElement('span');
+    num.className = `num n${i % 5}`;
+    num.textContent = i + 1;
     const span = document.createElement('span');
     span.className = item.sent ? 'txt sent' : 'txt';
     span.textContent = item.text;
@@ -123,7 +177,7 @@ function renderItems() {
       store('suggestions', items);
       renderItems();
     });
-    li.append(span, send, del);
+    li.append(num, span, send, del);
     ul.append(li);
   });
 }
@@ -299,6 +353,14 @@ function init() {
   });
 
   $('drop').addEventListener('click', dropInBox);
+  $('send-all').insertAdjacentHTML('afterbegin', ICONS.send);
+  $('clear-all').insertAdjacentHTML('afterbegin', ICONS.trash);
+  $('open-ideas').addEventListener('click', openModal);
+  $('send-all').addEventListener('click', () => { play('tap'); sendAll(); });
+  $('clear-all').addEventListener('click', clearAll);
+  $('close-ideas').addEventListener('click', () => { play('tap'); closeModal(); });
+  $('ideas-modal').addEventListener('click', (e) => { if (e.target === $('ideas-modal')) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
   // רענון הספירה לאחור כשחוזרים לאפליקציה ביום אחר
   document.addEventListener('visibilitychange', () => {

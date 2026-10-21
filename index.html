@@ -142,11 +142,20 @@
       </div>
 
       <div class="card idea-saved" id="saved-card" hidden>
-        <p class="saved-title">ההצעות שבקופסה <small>(חץ = שליחה לאגם בוואטסאפ)</small></p>
-        <ul id="saved" class="saved"></ul>
+        <button id="open-ideas" class="idea-tile t-count" type="button" aria-label="הרעיונות שלי"><b id="idea-count" class="count-badge">0</b><span>הרעיונות</span></button>
+        <button id="send-all" class="idea-tile t-send" type="button" aria-label="שלחו לאגם בוואטסאפ"><span>שלחו</span></button>
+        <button id="clear-all" class="idea-tile t-del" type="button" aria-label="מחקו את כל הרעיונות"><span>מחקו</span></button>
       </div>
     </div>
   </section>
+
+  <div id="ideas-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <button id="close-ideas" class="modal-x" type="button" aria-label="סגירה">✕</button>
+      <h3 id="modal-title">הרעיונות שלי 💡</h3>
+      <ul id="saved" class="saved"></ul>
+    </div>
+  </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
