@@ -15,9 +15,9 @@ def gradient(s):
     return img.convert("RGBA")
 
 
-def compose():
+def compose(transparent=False):
     s = BASE
-    img = gradient(s)
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0)) if transparent else gradient(s)
 
     # זוהר רך + "שמש" צהובה מאחורי אגם
     glow = Image.new("RGBA", (s, s), (0, 0, 0, 0))
@@ -46,9 +46,11 @@ def compose():
     d.ellipse((bx - br, by - br, bx + br, by + br), fill=(22, 163, 74, 255))
     d.line([(bx - br * .45, by + br * .02), (bx - br * .1, by + br * .38), (bx + br * .5, by - br * .35)],
            fill=(255, 255, 255, 255), width=int(br * .30), joint="curve")
-    return img.convert("RGB")
+    return img if transparent else img.convert("RGB")
 
 
 big = compose()
 for size, path in [(192, "icons/icon-192.png"), (512, "icons/icon-512.png"), (180, "icons/apple-touch-icon.png")]:
     big.resize((size, size), Image.LANCZOS).save(path)
+
+compose(True).resize((512, 512), Image.LANCZOS).save("img/agam-badge.png")

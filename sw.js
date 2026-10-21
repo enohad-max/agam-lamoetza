@@ -1,5 +1,5 @@
 // להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
-const CACHE = 'agam-v17';
+const CACHE = 'agam-v18';
 const ASSETS = [
   './',
   'index.html',
@@ -27,6 +27,7 @@ const ASSETS = [
   'js/game/achievements.js',
   'js/game/avatar.js',
   'fonts/Rubik-subset.woff2',
+  'img/agam-badge.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',

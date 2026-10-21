@@ -69,8 +69,8 @@ body {
 .hero > * { position: relative; z-index: 1; }
 
 .logo {
-  width: 96px;
-  height: 96px;
+  width: 140px;
+  height: 140px;
   filter: drop-shadow(0 8px 14px rgba(46, 16, 101, .35));
   animation: bob 3s ease-in-out infinite;
 }
@@ -392,7 +392,7 @@ a.btn { text-decoration: none; }
 
 @media (max-height: 640px) {
   .hero { padding-bottom: 18px; }
-  .logo { width: 64px; height: 64px; }
+  .logo { width: 88px; height: 88px; }
   .hero h1 { font-size: 2rem; }
   .menu-btn .tile { width: 48px; height: 48px; }
   .menu-sub { display: none; }
