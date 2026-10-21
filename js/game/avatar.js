@@ -22,13 +22,13 @@ export function avatarHTML() {
   return PLACEHOLDER;
 }
 
-// תמונה לשימוש ב-canvas (אם הוגדרה); אחרת null וציור ברירת המחדל נעשה בקוד המשחק
+// חיתוך השחקנית לשימוש ב-canvas (אם הוגדר); אחרת null וציור ברירת המחדל נעשה בקוד המשחק
 export function loadAvatarImage() {
-  if (!CONFIG.avatarSrc) return Promise.resolve(null);
+  if (!CONFIG.playerSrc) return Promise.resolve(null);
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = () => resolve(null);
-    img.src = CONFIG.avatarSrc;
+    img.src = CONFIG.playerSrc;
   });
 }

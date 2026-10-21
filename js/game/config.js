@@ -8,9 +8,10 @@ export const CONFIG = {
   tagline: 'עזרו לאגם לאסוף רעיונות ולבנות את הכיתה הכי כיפית שיש!',
   closing: 'כל רעיון יכול לעשות שינוי.',
 
-  // להחלפת הדמות: שימו תמונה בתיקיית img ורשמו כאן את הנתיב, למשל 'img/agam.png'.
-  // כשהשדה ריק מוצגת דמות מאוירת ברירת מחדל.
-  avatarSrc: '',
+  // avatarSrc = התג במסך הבית; playerSrc = חיתוך גוף עליון שאוחז בסל בזמן המשחק.
+  // כשהשדות ריקים מוצגת דמות מאוירת ברירת מחדל.
+  avatarSrc: 'img/agam-badge.png',
+  playerSrc: 'img/agam-cutout.png',
 
   campaignUrl: 'index.html',
 

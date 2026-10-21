@@ -93,17 +93,13 @@ body.game [hidden] { display: none !important; }
 .g-hero > * { position: relative; z-index: 1; }
 
 .avatar-big {
-  width: 148px;
-  height: 148px;
+  width: 168px;
+  height: 168px;
   margin: 0 auto 6px;
-  border-radius: 50%;
-  background: #fff;
-  border: 6px solid var(--g-sun);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, .25);
-  overflow: hidden;
+  filter: drop-shadow(0 10px 16px rgba(15, 23, 42, .3));
   animation: bob 3s ease-in-out infinite;
 }
-.avatar-big svg, .avatar-big img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.avatar-big svg, .avatar-big img { width: 100%; height: 100%; display: block; object-fit: contain; }
 @keyframes bob { 50% { transform: translateY(-6px); } }
 
 .g-hero h1 { margin: 6px 0 0; font-size: 2.1rem; line-height: 1.15; font-weight: 900; text-shadow: 0 3px 0 rgba(15, 23, 42, .25); }

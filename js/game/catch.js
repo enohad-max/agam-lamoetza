@@ -49,7 +49,7 @@ export class CatchGame {
     });
   }
 
-  setAvatar(img) { this.avatar = img; }
+  setAvatar(img) { this.avatar = img; this.layout(); }
 
   // שליטה בהטיה: gamma = הטיה ימינה/שמאלה במעלות. נקודת האפס = האופן שבו הילד מחזיק את הטלפון בתחילת המשחק.
   setTiltEnabled(on) {
@@ -80,10 +80,26 @@ export class CatchGame {
     this.canvas.width = Math.round(this.W * dpr);
     this.canvas.height = Math.round(this.H * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.bw = Math.min(112, this.W * 0.27);
-    this.bh = this.bw * 0.95;
+    this.layout();
     if (this.px == null) this.px = this.W / 2;
     this.px = Math.min(Math.max(this.px, this.bw / 2), this.W - this.bw / 2);
+  }
+
+  // bw = רוחב הסל (אזור התפיסה); rimY = גובה שפת הסל, שם הרעיונות נתפסים
+  layout() {
+    if (!this.W) return;
+    this.bw = Math.min(132, this.W * 0.32);
+    if (this.avatar) {
+      this.pw = this.bw * 1.9;
+      this.ph = this.pw * this.avatar.height / this.avatar.width;
+      this.basketH = this.ph * 0.26;
+      this.bh = this.basketH;
+      this.rimY = this.H - this.basketH - 6;
+    } else {
+      this.bh = this.bw * 0.95;
+      this.rimY = this.H - this.bh - 8;
+    }
+    if (this.px != null) this.px = Math.min(Math.max(this.px, this.bw / 2), this.W - this.bw / 2);
   }
 
   start() {
@@ -97,6 +113,8 @@ export class CatchGame {
     this.gold = 0;
     this.nextSpawn = 0.4;
     this.wobble = 0;
+    this.pulse = 0;
+    this.lean = 0;
     this.rainUntil = -1;
     this.rainAt = CONFIG.rain.windows.map(([a, b]) => rand(a, b));
     this.px = this.W / 2;
@@ -149,7 +167,12 @@ export class CatchGame {
       this.target = (this.target ?? this.px) + (this.keys.right ? 1 : 0) * 560 * dt - (this.keys.left ? 1 : 0) * 560 * dt;
     }
     this.target = Math.min(Math.max(this.target ?? this.px, this.bw / 2), this.W - this.bw / 2);
+    const prev = this.px;
     this.px += (this.target - this.px) * Math.min(1, dt * (this.tiltOn ? 12 : 18));
+    // הטיה עדינה לכיוון התנועה, וחזרה לאיזון
+    const speed = dt ? (this.px - prev) / dt : 0;
+    this.lean += (Math.max(-1, Math.min(1, speed / 500)) - this.lean) * Math.min(1, dt * 10);
+    this.pulse = Math.max(0, this.pulse - dt * 3.2);
 
     // גשם של רעיונות
     for (let i = 0; i < this.rainAt.length; i++) {
@@ -168,7 +191,7 @@ export class CatchGame {
       this.nextSpawn = raining ? CONFIG.spawn.rainEvery : lerp(CONFIG.spawn.startEvery, CONFIG.spawn.endEvery, progress);
     }
 
-    const basketTop = this.H - this.bh - 8;
+    const basketTop = this.rimY;
     for (const it of this.items) {
       it.y += it.vy * dt;
       it.rot += it.vr * dt;
@@ -208,7 +231,7 @@ export class CatchGame {
 
   collect(it) {
     const { def } = it;
-    const at = { x: it.x, y: this.H - this.bh - 16 };
+    const at = { x: it.x, y: this.rimY - 12 };
     if (def.bad) {
       this.score = Math.max(0, this.score - CONFIG.badPenalty);
       this.wobble = 0.4;
@@ -219,6 +242,7 @@ export class CatchGame {
     const points = def.tier === 'gold' ? CONFIG.goldPoints : def.points;
     this.score += points;
     this.ideas += 1;
+    this.pulse = 1;
     if (def.id === 'bulb') this.bulbs += 1;
     if (def.tier === 'gold') this.gold += 1;
     this.floats.push({ ...at, text: `+${points}`, color: def.tier === 'gold' ? '#f59e0b' : '#0d9488', life: 0.9 });
@@ -228,6 +252,7 @@ export class CatchGame {
   draw() {
     const g = this.ctx;
     g.clearRect(0, 0, this.W, this.H);
+    if (this.avatar) this.drawPlayer(g);
     for (const it of this.items) this.drawItem(g, it);
     this.drawBasket(g);
     g.font = `800 22px Rubik, system-ui, sans-serif`;
@@ -287,6 +312,64 @@ export class CatchGame {
     g.beginPath(); g.arc(r * 0.64, cy - r * 1.5, r * 0.13 * pulse, 0, Math.PI * 2); g.fill();
   }
 
+  // אגם מאחורי הסל: חיתוך גוף עליון, מוטה מעט לכיוון התנועה ו"קופצת" בכל תפיסה
+  drawPlayer(g) {
+    const shake = this.wobble > 0 ? Math.sin(this.wobble * 60) * 4 : 0;
+    const x = this.px + shake;
+    const hop = Math.sin(Math.min(1, this.pulse) * Math.PI) * 5;
+    g.save();
+    g.translate(x, this.H);
+    g.rotate(this.lean * 0.07);
+    g.shadowColor = 'rgba(15, 23, 42, .3)';
+    g.shadowBlur = 10;
+    g.drawImage(this.avatar, -this.pw / 2, -this.ph - hop, this.pw, this.ph);
+    g.restore();
+  }
+
+  // סל מקש שאגם אוחזת בו; מצויר אחרי הפריטים כדי שייראו כנופלים פנימה
+  drawBasketFront(g, x) {
+    const { bw, basketH } = this;
+    const sq = 1 - 0.1 * Math.sin(Math.min(1, this.pulse) * Math.PI);
+    g.save();
+    g.translate(x, this.H - 6);
+    g.scale(1 + (1 - sq) * 0.6, sq);
+    const hw = bw / 2;
+    const h = basketH;
+    // גוף הסל
+    const grad = g.createLinearGradient(0, -h, 0, 0);
+    grad.addColorStop(0, '#2dd4bf');
+    grad.addColorStop(1, '#0f766e');
+    g.fillStyle = grad;
+    g.beginPath();
+    g.moveTo(-hw, -h); g.lineTo(hw, -h);
+    g.lineTo(hw * 0.8, 0); g.lineTo(-hw * 0.8, 0);
+    g.closePath(); g.fill();
+    // קליעה
+    g.save();
+    g.clip();
+    g.strokeStyle = 'rgba(255, 255, 255, .22)';
+    g.lineWidth = 2;
+    for (let i = -hw; i < hw * 2; i += 13) {
+      g.beginPath(); g.moveTo(i - hw, -h); g.lineTo(i - hw - h * 0.5, 0); g.stroke();
+      g.beginPath(); g.moveTo(i - hw - h * 0.5, -h); g.lineTo(i - hw, 0); g.stroke();
+    }
+    g.restore();
+    // שפה צהובה
+    g.fillStyle = '#facc15';
+    g.beginPath(); g.roundRect(-hw - 4, -h - 6, bw + 8, 12, 6); g.fill();
+    g.fillStyle = 'rgba(255, 255, 255, .45)';
+    g.beginPath(); g.roundRect(-hw + 4, -h - 4, bw * 0.4, 3, 2); g.fill();
+    // הידיים של אגם אוחזות בשפה
+    g.fillStyle = '#f3c3a1';
+    g.strokeStyle = '#d99b78';
+    g.lineWidth = 1.5;
+    for (const sx of [-1, 1]) {
+      g.beginPath(); g.ellipse(sx * (hw + 2), -h + 2, bw * 0.075, bw * 0.095, sx * 0.25, 0, Math.PI * 2);
+      g.fill(); g.stroke();
+    }
+    g.restore();
+  }
+
   drawBasket(g) {
     const { bw, bh } = this;
     const shake = this.wobble > 0 ? Math.sin(this.wobble * 60) * 4 : 0;
@@ -294,7 +377,7 @@ export class CatchGame {
     const top = this.H - bh - 8;
 
     if (this.avatar) {
-      g.drawImage(this.avatar, x - bw / 2, top, bw, bh);
+      this.drawBasketFront(g, x);
       return;
     }
     // סל
