@@ -1,7 +1,7 @@
 import { renderCountdown } from './countdown.js';
 import { initQuiz } from './quiz.js';
 import { sendWhatsApp } from './whatsapp.js';
-import { PLATFORM } from './data.js';
+import { PLATFORM, PLATFORM_INTRO } from './data.js';
 import { ICONS } from './icons.js';
 import { confetti } from './confetti.js';
 import { play, isMuted, setMuted } from './sound.js';
@@ -32,32 +32,48 @@ function openWhatsApp(item) {
 }
 
 function renderPlatform() {
-  const ul = $('promises');
-  for (const p of PLATFORM) {
-    const li = document.createElement('li');
+  const root = $('promises');
+  PLATFORM.forEach((cat, i) => {
+    const box = document.createElement('details');
+    box.className = 'cat';
+    box.open = i === 0;
+
+    const sum = document.createElement('summary');
     const tile = document.createElement('span');
-    tile.className = `tile ${p.tone}`;
-    tile.innerHTML = ICONS[p.icon];
+    tile.className = `tile ${cat.tone}`;
+    tile.textContent = cat.emoji;
+    const name = document.createElement('span');
+    name.className = 'cat-name';
+    name.textContent = cat.title;
+    sum.append(tile, name);
+    sum.addEventListener('click', () => play('tap'));
+
     const body = document.createElement('div');
-    const h = document.createElement('h3');
-    h.textContent = p.title;
-    const t = document.createElement('p');
-    t.textContent = p.text;
-    body.append(h, t);
-    if (p.cta) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'promise-cta';
-      b.textContent = p.cta.label;
-      b.addEventListener('click', () => {
-        play('tap');
-        location.hash = '#ideas';
-      });
-      body.append(b);
+    body.className = 'cat-body';
+    for (const it of cat.items) {
+      const h = document.createElement('h3');
+      h.textContent = it.title;
+      const t = document.createElement('p');
+      t.textContent = it.text;
+      body.append(h, t);
+      if (it.cta) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'promise-cta';
+        b.textContent = it.cta.label;
+        b.addEventListener('click', () => { play('tap'); location.hash = it.cta.hash; });
+        body.append(b);
+      }
     }
-    li.append(tile, body);
-    ul.append(li);
-  }
+    for (const n of cat.notes || []) {
+      const p = document.createElement('p');
+      p.className = 'cat-note';
+      p.textContent = n;
+      body.append(p);
+    }
+    box.append(sum, body);
+    root.append(box);
+  });
 }
 
 function renderItems() {
@@ -176,6 +192,7 @@ function init() {
   document.querySelectorAll('[data-icon]').forEach((n) => { n.innerHTML = ICONS[n.dataset.icon]; });
   const countdown = () => renderCountdown($('count-num'), $('count-big'), $('count-small'));
   countdown();
+  $('platform-intro').textContent = PLATFORM_INTRO;
   renderPlatform();
   setupQuizBubble();
   initQuiz($('quiz'));
