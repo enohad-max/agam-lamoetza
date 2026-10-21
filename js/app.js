@@ -133,6 +133,26 @@ function setupInstallHint() {
     : 'באנדרואיד: לחצו על ⋮ בכרום ואז "הוספה למסך הבית".';
 }
 
+const SAYINGS = {
+  start: ['בהצלחה! 💜'],
+  right: ['כל הכבוד! 🎉', 'בול! ⭐', 'יפה מאוד! 😄'],
+  wrong: ['כמעט! 😉', 'לא נורא, ממשיכים! 💪'],
+  pick: ['תודה ששיתפתם! 💜'],
+  done: ['תודה שבאתם! 💜'],
+  perfect: ['וואו, אתם מכירים אותי! 🏆'],
+};
+
+function setupQuizBubble() {
+  const bubble = $('quiz-bubble');
+  document.addEventListener('quiz-react', (e) => {
+    const list = SAYINGS[e.detail] || SAYINGS.start;
+    bubble.textContent = list[Math.floor(Math.random() * list.length)];
+    bubble.classList.remove('say');
+    void bubble.offsetWidth;
+    bubble.classList.add('say');
+  });
+}
+
 const SCREENS = ['intro', 'home', 'platform', 'quiz', 'ideas'];
 
 // ניווט לפי hash: כפתור "אחורה" של הטלפון חוזר לתפריט
@@ -157,6 +177,7 @@ function init() {
   const countdown = () => renderCountdown($('count-num'), $('count-big'), $('count-small'));
   countdown();
   renderPlatform();
+  setupQuizBubble();
   initQuiz($('quiz'));
   renderItems();
   setupInstallHint();

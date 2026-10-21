@@ -34,6 +34,11 @@ function answerButton(text, onClick) {
   return b;
 }
 
+// בלון הדיבור של אגם מגיב לתשובות (app.js מאזין לאירוע)
+function react(kind) {
+  document.dispatchEvent(new CustomEvent('quiz-react', { detail: kind }));
+}
+
 export function initQuiz(root) {
   let step = 0;
   let score = 0;
@@ -59,6 +64,7 @@ export function initQuiz(root) {
       score = 0;
       answers = [];
       play('tap');
+      react('start');
       renderQuestion();
     }));
   }
@@ -103,6 +109,7 @@ export function initQuiz(root) {
         play('tap');
       }
       answers.push({ label: item.label, text: item.a[i] });
+      react(knowledge ? (i === item.correct ? 'right' : 'wrong') : 'pick');
       setTimeout(() => {
         step++;
         if (step < QUIZ.length) renderQuestion();
@@ -121,6 +128,7 @@ export function initQuiz(root) {
     root.replaceChildren();
     confetti();
     play('win');
+    react(score === KNOWLEDGE ? 'perfect' : 'done');
     root.append(
       el('div', 'big-emoji', score === KNOWLEDGE ? '🏆' : '🎉'),
       el('div', 'q-text', `ענית נכון על ${score} מתוך ${KNOWLEDGE}!`),
