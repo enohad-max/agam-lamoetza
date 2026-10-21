@@ -169,6 +169,11 @@ function setupQuizBubble() {
   });
 }
 
+// עמוד הפתיחה מוצג בכל פתיחה חדשה (לשונית/הפעלת האפליקציה), גם אם הכתובת שנשמרה בדפדפן כוללת #platform וכד'
+const INTRO_KEY = 'agam-intro-seen';
+const introSeen = () => { try { return sessionStorage.getItem(INTRO_KEY) === '1'; } catch { return false; } };
+const markIntroSeen = () => { try { sessionStorage.setItem(INTRO_KEY, '1'); } catch {} };
+
 const SCREENS = ['intro', 'home', 'platform', 'quiz', 'ideas'];
 
 // ניווט לפי hash: כפתור "אחורה" של הטלפון חוזר לתפריט
@@ -180,11 +185,13 @@ function route() {
 }
 
 function init() {
+  if (!introSeen() && location.hash) history.replaceState(null, '', location.pathname + location.search);
   window.addEventListener('hashchange', () => { route(); play('tap'); });
   $('intro-go').addEventListener('click', (e) => {
     e.preventDefault();
     play('win');
     confetti();
+    markIntroSeen();
     location.replace('#home'); // בלי להשאיר את הפתיחה בהיסטוריה
     route();
   });

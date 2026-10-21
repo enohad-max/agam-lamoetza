@@ -478,6 +478,8 @@ async function init() {
     if (sc.clientWidth) sc.style.setProperty('--u', `${sc.clientWidth / 100}px`);
   });
   $('to-campaign').href = CONFIG.campaignUrl;
+  // מי שחוזר מהמשחק לא צריך לראות שוב את עמוד הפתיחה
+  $('to-campaign').addEventListener('click', () => { try { sessionStorage.setItem('agam-intro-seen', '1'); } catch {} });
 
   show('home');
 
