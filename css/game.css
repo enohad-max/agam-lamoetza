@@ -308,7 +308,7 @@ body.game [hidden] { display: none !important; }
   --u: 3.9px;
   position: relative;
   width: 100%;
-  aspect-ratio: 100 / 130;
+  aspect-ratio: 100 / 112;
   overflow: hidden;
   background: #cdeee7;
   box-shadow: 0 10px 24px rgba(15, 118, 110, .18);
@@ -453,3 +453,48 @@ body.game .toast { z-index: 80; }
   #screen-home .avatar-big { width: clamp(64px, 34dvh, 150px); height: clamp(64px, 34dvh, 150px); }
   #screen-home .g-tagline, #screen-home .g-value { display: none; }
 }
+
+/* ---------- כפתור חזרה בראש דף המשחקים ---------- */
+a.g-icon-btn { text-decoration: none; }
+#back-main { font-size: 1.5rem; }
+#open-settings { inset-inline-start: auto; inset-inline-end: 12px; }
+
+/* ---------- הכיתה שלי: ממלא את המסך, בלי גלילה ---------- */
+#screen-class { position: fixed; inset: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+#screen-class .g-top { flex: none; }
+#screen-class .scene-wrap {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  container-type: size;
+  display: grid;
+  place-items: center;
+}
+/* הסצנה ממלאת את השטח הפנוי: מתכווצת/מתארכת מעט לפי גובה המסך (הציור נמתח, הפריטים נשארים עגולים) */
+#screen-class .scene {
+  --w: min(100cqw, calc(100cqh * .95));
+  width: var(--w);
+  height: min(100cqh, calc(var(--w) * 1.5));
+  aspect-ratio: auto;
+  border-radius: 0 0 22px 22px;
+}
+#screen-class .g-main {
+  flex: none;
+  width: 100%;
+  gap: 1dvh;
+  padding: 1.4dvh 16px calc(env(safe-area-inset-bottom) + 1.4dvh);
+}
+#screen-class .g-sub { margin: 0; text-align: center; font-size: clamp(.82rem, 2dvh, 1rem); line-height: 1.3; }
+#screen-class .class-count { font-size: clamp(.85rem, 2.1dvh, 1.05rem); }
+#screen-class .g-btn.small { min-height: clamp(44px, 6.4dvh, 56px); }
+
+@media (orientation: landscape) and (max-height: 560px) {
+  #screen-class { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; }
+  #screen-class .g-top { grid-column: 1 / -1; }
+  #screen-class .g-main { align-self: center; padding: 0 16px; }
+}
+
+/* .g-hero > * מגדיר position: relative ודורס את המיקום של הכפתורים בפינות */
+.g-hero > .g-icon-btn { position: absolute; z-index: 2; }

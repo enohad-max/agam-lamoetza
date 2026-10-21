@@ -1,6 +1,6 @@
 import { CONFIG } from './config.js';
 import { ITEMS, RARITIES } from './items.js';
-import { SCENE_SVG, SCENE_HEIGHT } from './scene.js';
+import { SCENE_SVG, SCENE_HEIGHT, sceneY } from './scene.js';
 import { getState, update, resetState, placedCount } from './state.js';
 import { CatchGame } from './catch.js';
 import { RunGame } from './run.js';
@@ -306,7 +306,7 @@ function renderClass() {
     const b = el('button', placed ? 'spot placed' : 'spot ghost', item.emoji);
     b.type = 'button';
     b.style.left = `${x}%`;
-    b.style.top = `${(y / SCENE_HEIGHT) * 100}%`;
+    b.style.top = `${(sceneY(y) / SCENE_HEIGHT) * 100}%`;
     b.style.setProperty('--s', size);
     b.style.setProperty('--d', `${(Math.random() * 2).toFixed(2)}s`);
     if (item.id === lastPlaced) b.classList.add('just');
@@ -479,7 +479,9 @@ async function init() {
   });
   $('to-campaign').href = CONFIG.campaignUrl;
   // מי שחוזר מהמשחק לא צריך לראות שוב את עמוד הפתיחה
-  $('to-campaign').addEventListener('click', () => { try { sessionStorage.setItem('agam-intro-seen', '1'); } catch {} });
+  for (const id of ['to-campaign', 'back-main']) {
+    $(id).addEventListener('click', () => { try { sessionStorage.setItem('agam-intro-seen', '1'); } catch {} });
+  }
 
   show('home');
 

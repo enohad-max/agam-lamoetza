@@ -1,6 +1,11 @@
 // איור הכיתה (רקע בלבד). הפריטים עצמם מונחים מעליו לפי pos ב-items.js.
-// מערכת קואורדינטות: 100 רוחב × 130 גובה.
-export const SCENE_HEIGHT = 130;
+// מערכת קואורדינטות: 100 רוחב × 112 גובה. הרצפה (מתחת ל-FLOOR_TOP) דחוסה לגובה FLOOR_K מהמקור.
+export const SCENE_HEIGHT = 112;
+const FLOOR_TOP = 78;
+const FLOOR_K = 34 / 52;
+
+// ממיר גובה של פריט במערכת המקורית (130) לגובה בסצנה עם הרצפה המקוצרת
+export const sceneY = (y) => (y > FLOOR_TOP ? FLOOR_TOP + (y - FLOOR_TOP) * FLOOR_K : y);
 
 const planks = [86, 95, 105, 116, 126]
   .map((y) => `<path d="M0 ${y}H100" stroke="#c9965a" stroke-width=".35" opacity=".55"/>`)
@@ -10,7 +15,7 @@ const seams = [[22, 78, 86], [58, 78, 86], [84, 86, 95], [38, 86, 95], [12, 95, 
   .join('');
 
 export const SCENE_SVG = `
-<svg viewBox="0 0 100 130" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<svg viewBox="0 0 100 112" preserveAspectRatio="none" aria-hidden="true">
   <defs>
     <linearGradient id="g-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8f8f5"/><stop offset="1" stop-color="#cdeee7"/></linearGradient>
     <linearGradient id="g-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d5ab"/><stop offset="1" stop-color="#dcb07a"/></linearGradient>
@@ -22,8 +27,10 @@ export const SCENE_SVG = `
   <!-- קיר ורצפה -->
   <rect width="100" height="78" fill="url(#g-wall)"/>
   <rect width="100" height="78" fill="url(#p-stripes)"/>
-  <rect y="78" width="100" height="52" fill="url(#g-floor)"/>
-  ${planks}${seams}
+  <g transform="translate(0 78) scale(1 ${FLOOR_K}) translate(0 -78)">
+    <rect y="78" width="100" height="52" fill="url(#g-floor)"/>
+    ${planks}${seams}
+  </g>
   <rect y="76.5" width="100" height="2.2" fill="#b7864a"/>
 
   <!-- חלון -->
@@ -56,9 +63,9 @@ export const SCENE_SVG = `
   <rect x="3.5" y="55.5" width="35" height="24" rx="3.5" fill="#ddd6fe" opacity=".85" stroke="#a78bfa" stroke-width=".7" stroke-dasharray="1.6 1.2"/>
 
   <!-- שולחן -->
-  <ellipse cx="69" cy="94.5" rx="29" ry="2.1" fill="#000" opacity=".12"/>
+  <ellipse cx="69" cy="89" rx="29" ry="2" fill="#000" opacity=".12"/>
   <rect x="42.5" y="73.6" width="52" height="2.2" fill="#92400e"/>
-  <rect x="44" y="75.6" width="2.6" height="18.5" fill="#92400e"/>
-  <rect x="90.4" y="75.6" width="2.6" height="18.5" fill="#92400e"/>
+  <rect x="44" y="75.6" width="2.6" height="12.9" fill="#92400e"/>
+  <rect x="90.4" y="75.6" width="2.6" height="12.9" fill="#92400e"/>
   <rect x="39.5" y="70.2" width="58" height="3.4" rx="1.1" fill="#b45309"/>
 </svg>`;
