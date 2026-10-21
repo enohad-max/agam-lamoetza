@@ -1,5 +1,5 @@
 // להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
-const CACHE = 'agam-v46';
+const CACHE = 'agam-v48';
 const ASSETS = [
   './',
   'index.html',

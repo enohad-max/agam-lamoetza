@@ -778,3 +778,79 @@ html:has(body.app) { overscroll-behavior: none; }
   width: min(96cqw, 150cqh);
   bottom: calc(min(96cqw, 150cqh) * -0.42);
 }
+
+/* ---------- המצע: כרטיסים סגורים עם הזמנה ללחוץ ---------- */
+#screen-platform { position: fixed; inset: 0; min-height: 0; overflow: hidden; }
+#screen-platform .screen-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  gap: 1.6dvh;
+  padding-top: 1.4dvh;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 2dvh);
+}
+.platform-intro { padding: 1.3dvh 14px; font-size: clamp(.82rem, 1.95dvh, 1rem); line-height: 1.45; }
+
+.tap-hint {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 1.2dvh 16px;
+  border-radius: 22px;
+  color: #fff;
+  background: linear-gradient(100deg, #f59e0b, #ec4899 55%, #8b5cf6);
+  background-size: 200% 100%;
+  box-shadow: 0 5px 0 rgba(91, 33, 182, .35), 0 10px 22px rgba(236, 72, 153, .3);
+  transform: rotate(-1.5deg);
+  animation: hint-in .7s cubic-bezier(.2, 1.5, .4, 1) both, shimmer 4s linear infinite;
+  transition: opacity .3s, transform .3s, max-height .3s, padding .3s, margin .3s;
+  max-height: 120px;
+  overflow: visible;
+}
+@keyframes hint-in { from { opacity: 0; transform: scale(.6) rotate(-6deg); } }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.tap-hint .tap-text { font-size: clamp(1.25rem, 3.6dvh, 1.7rem); font-weight: 900; letter-spacing: .3px; text-shadow: 0 2px 0 rgba(91, 33, 182, .35); }
+.tap-hint .finger { font-size: clamp(1.4rem, 3.6dvh, 2rem); animation: poke 1s ease-in-out infinite; display: inline-block; }
+.tap-hint .finger.f2 { animation-delay: -.5s; }
+@keyframes poke { 50% { transform: translateY(7px); } }
+.tap-hint .tsp { position: absolute; font-size: 1.1rem; font-style: normal; animation: twinkle-h 1.8s ease-in-out infinite; }
+.tsp.t1 { top: -8px; left: 8%; }
+.tsp.t2 { top: -10px; right: 12%; animation-delay: -.6s; }
+.tsp.t3 { bottom: -8px; left: 46%; animation-delay: -1.2s; }
+@keyframes twinkle-h { 0%, 100% { opacity: .2; transform: scale(.5) rotate(0); } 50% { opacity: 1; transform: scale(1.2) rotate(20deg); } }
+.tap-hint.gone { opacity: 0; transform: scale(.7); max-height: 0; padding-block: 0; margin-block: -.8dvh; overflow: hidden; pointer-events: none; animation: none; }
+
+.cat { border-width: 2.5px; border-color: var(--c); background: #fff; background: color-mix(in srgb, var(--c) 7%, #fff); animation: cat-in .55s cubic-bezier(.2, 1.4, .4, 1) calc(var(--i) * .08s + .15s) both; }
+@keyframes cat-in { from { opacity: 0; transform: translateY(22px) scale(.95); } }
+.cats.all-closed .cat:not([open]) { animation: cat-in .55s cubic-bezier(.2, 1.4, .4, 1) calc(var(--i) * .08s + .15s) both, invite 4.8s ease-in-out calc(var(--i) * .5s + 2s) infinite; }
+@keyframes invite { 0%, 12%, 100% { transform: none; } 3% { transform: rotate(-1.4deg) scale(1.02); } 6% { transform: rotate(1.4deg) scale(1.02); } 9% { transform: rotate(-.8deg); } }
+.cat summary { min-height: clamp(54px, 8.4dvh, 82px); }
+.cat .tile { width: clamp(40px, 6.2dvh, 56px); height: clamp(40px, 6.2dvh, 56px); font-size: clamp(1.3rem, 3.3dvh, 1.8rem); background: var(--c); }
+.cat-name { font-size: clamp(1rem, 2.5dvh, 1.2rem); }
+/* כפתור + עגול שמסתובב ל-× כשפותחים */
+.cat summary::after {
+  content: "+";
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px; height: 38px;
+  margin-inline-start: auto;
+  border-radius: 50%;
+  background: var(--c);
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1;
+  transform: none;
+  transition: transform .25s;
+}
+.cat[open] summary::after { transform: rotate(45deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tap-hint, .tap-hint .finger, .tap-hint .tsp, .cat, .cats.all-closed .cat:not([open]) { animation: none !important; }
+}
+
+/* טלפון נמוך מאוד: מוותרים על פסקת הפתיחה כדי שהכרטיסים הסגורים ייכנסו בלי גלילה */
+@media (max-height: 600px) and (orientation: portrait) { .platform-intro { display: none; } }

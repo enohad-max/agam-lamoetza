@@ -31,12 +31,15 @@ function openWhatsApp(item) {
   renderItems();
 }
 
+const CAT_COLORS = { 't-purple': '#8b5cf6', 't-pink': '#ec4899', 't-green': '#16a34a', 't-yellow': '#f59e0b' };
+
 function renderPlatform() {
   const root = $('promises');
   PLATFORM.forEach((cat, i) => {
     const box = document.createElement('details');
     box.className = 'cat';
-    box.open = i === 0;
+    box.style.setProperty('--i', i);
+    box.style.setProperty('--c', CAT_COLORS[cat.tone] || '#8b5cf6');
 
     const sum = document.createElement('summary');
     const tile = document.createElement('span');
@@ -72,8 +75,21 @@ function renderPlatform() {
       body.append(p);
     }
     box.append(sum, body);
+    box.addEventListener('toggle', syncPlatformHint);
     root.append(box);
   });
+}
+
+// השלט "לחצו לפתיחה" והרעידה העדינה של הכרטיסים מופיעים רק כשהכול סגור
+function syncPlatformHint() {
+  const any = [...$('promises').querySelectorAll('details')].some((d) => d.open);
+  $('promises').classList.toggle('all-closed', !any);
+  $('platform-hint').classList.toggle('gone', any);
+}
+
+function closePlatform() {
+  $('promises').querySelectorAll('details').forEach((d) => { d.open = false; });
+  syncPlatformHint();
 }
 
 function renderItems() {
@@ -243,6 +259,7 @@ function route() {
   const name = location.hash.slice(1);
   const current = SCREENS.includes(name) ? name : 'intro';
   for (const s of SCREENS) $(`screen-${s}`).hidden = s !== current;
+  if (current === 'platform') closePlatform(); // בכל כניסה למסך הכול סגור
   window.scrollTo(0, 0);
 }
 
