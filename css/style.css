@@ -440,15 +440,14 @@ html:has(body.app) { overscroll-behavior: none; }
   overflow-y: auto;
   max-width: 520px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 2dvh) 20px 0;
+  padding: calc(env(safe-area-inset-top) + 3dvh) 20px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: 1.6dvh;
   text-align: center;
 }
-.intro-inner > :first-child { margin-top: auto; }
-.intro-inner > :last-child { margin-bottom: 0; }
 .intro-inner > * { animation: rise .7s cubic-bezier(.2, .9, .3, 1) both; }
 .intro-title { animation-delay: .15s; }
 .intro-card { animation-delay: .3s; }
@@ -514,11 +513,12 @@ html:has(body.app) { overscroll-behavior: none; }
 
 .intro-stage {
   position: relative;
-  flex: none;
+  flex: 1 1 clamp(170px, 31dvh, 300px);
   width: calc(100% + 40px);
-  height: clamp(170px, 31dvh, 300px);
+  max-height: min(88vw, 460px); /* עד הגובה שבו התמונה עדיין נכנסת לרוחב */
   margin-top: .6dvh;
   overflow: hidden;
+  container-type: size;
 }
 /* קרני שמש שפורשות מאחורי אגם */
 .intro-stage::before, .peek-stage::before {
@@ -771,4 +771,10 @@ html:has(body.app) { overscroll-behavior: none; }
 @media (prefers-reduced-motion: reduce) {
   .idea-hero .note, .idea-pic, .idea-pic > img, .idea-pic .glow, .idea-pic .sp { animation: none; }
   .idea-pic .glow { opacity: .5; }
+}
+
+/* עמוד הפתיחה: השמש גדלה יחד עם אזור התמונה (חצי עיגול שעולה מהקצה התחתון) */
+.intro-stage::after {
+  width: min(96cqw, 150cqh);
+  bottom: calc(min(96cqw, 150cqh) * -0.42);
 }
