@@ -409,3 +409,47 @@ body.game .toast { z-index: 80; }
 @media (prefers-reduced-motion: reduce) {
   .avatar-big, .spot, .reward-card, .countdown-overlay.on { animation: none; }
 }
+
+/* ---------- מסך המשחקים: ממלא את כל המסך, בלי גלילה ובלי שטח מת ---------- */
+#screen-home { position: fixed; inset: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+#screen-home .g-hero {
+  flex: none;
+  padding: calc(env(safe-area-inset-top) + 1.6dvh) 16px 2.6dvh;
+  border-radius: 0 0 36px 36px;
+}
+#screen-home .avatar-big { width: clamp(72px, 19dvh, 170px); height: clamp(72px, 19dvh, 170px); margin-bottom: .4dvh; }
+#screen-home .g-hero h1 { margin-top: .6dvh; font-size: clamp(1.5rem, 4.6dvh, 2.2rem); }
+#screen-home .g-slogan { margin-top: 1dvh; padding: .4dvh 16px; font-size: clamp(.85rem, 2.2dvh, 1.05rem); }
+#screen-home .g-main {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6dvh;
+  padding: 2dvh 16px calc(env(safe-area-inset-bottom) + 1.6dvh);
+}
+#screen-home .g-pick { flex: none; font-size: clamp(.95rem, 2.4dvh, 1.15rem); }
+#screen-home .g-row { min-height: 0; grid-auto-rows: minmax(0, 1fr); }
+#screen-home .g-games { flex: 1.35; }
+#screen-home .g-sec { flex: 1; }
+#screen-home .g-btn {
+  min-height: 0;
+  height: 100%;
+  padding: 6px;
+  container-type: size;
+  gap: 0;
+}
+#screen-home .g-btn-emoji { font-size: min(30cqh, 2.4rem); line-height: 1.05; margin-bottom: 2cqh; }
+#screen-home .g-btn { font-size: min(15cqh, 1.25rem); line-height: 1.1; }
+#screen-home .g-btn small { font-size: min(10cqh, .85rem); margin-top: 2cqh; }
+#screen-home .g-tagline { flex: none; margin: 0; font-size: clamp(.85rem, 2.1dvh, 1.1rem); line-height: 1.3; }
+#screen-home .g-value { flex: none; padding: .8dvh 12px; font-size: clamp(.8rem, 1.9dvh, 1rem); }
+#screen-home .g-link { flex: none; text-align: center; font-size: clamp(.8rem, 1.9dvh, 1rem); }
+@media (max-height: 600px) { #screen-home .g-value { display: none; } }
+@media (orientation: landscape) and (max-height: 560px) {
+  #screen-home { flex-direction: row; }
+  #screen-home .g-hero { flex: 0 0 36%; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 36px 0 0 36px; }
+  #screen-home .avatar-big { width: clamp(64px, 34dvh, 150px); height: clamp(64px, 34dvh, 150px); }
+  #screen-home .g-tagline, #screen-home .g-value { display: none; }
+}
