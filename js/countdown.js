@@ -10,7 +10,7 @@ export function renderCountdown(num, big, small) {
   if (days > 1) {
     num.textContent = days;
     big.textContent = 'ימים עד הבחירות';
-    small.textContent = 'שישי 23.10';
+    small.textContent = 'ראשון 25.10';
   } else if (days === 1) {
     num.textContent = '1';
     big.textContent = 'מחר מצביעים!';
