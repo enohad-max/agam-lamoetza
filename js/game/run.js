@@ -510,7 +510,7 @@ export class RunGame {
     g.translate(0, -38 * u);
     g.rotate(air ? -0.05 : Math.sin(this.phase * 2) * 0.04);
     if (this.avatar) {
-      g.drawImage(this.avatar, 38, 0, 270, 236, -hw / 2, -hh, hw, hh);
+      g.drawImage(this.avatar, 10, 0, 270, 236, -hw / 2, -hh, hw, hh);
     } else {
       g.fillStyle = '#fcd5b0';
       g.beginPath(); g.arc(0, -hh / 2, hw / 2.2, 0, 6.283); g.fill();
